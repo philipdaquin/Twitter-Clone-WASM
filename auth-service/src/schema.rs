@@ -1,23 +1,26 @@
 table! {
-    authors (id) {
+    users (id) {
         id -> Int4,
-        name -> Varchar,
-        age -> Nullable<Int4>,
+        created_at -> Timestamp,
+        first_name -> Varchar,
+        last_name -> Varchar,
+        username -> Varchar,
+        location -> Nullable<Varchar>,
+        email -> Varchar,
+        hash -> Varchar,
+        role -> Varchar,
     }
 }
 
 table! {
-    books (id) {
-        id -> Int4,
-        title -> Varchar,
-        genre -> Varchar,
-        user_id -> Int4,
+    valid_roles (role) {
+        role -> Varchar,
     }
 }
 
-joinable!(books -> authors (user_id));
+joinable!(users -> valid_roles (role));
 
 allow_tables_to_appear_in_same_query!(
-    authors,
-    books,
+    users,
+    valid_roles,
 );
