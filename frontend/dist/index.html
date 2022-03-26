@@ -1,0 +1,66 @@
+<html lang="en"><head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+
+        <!--========== CSS ==========-->
+        <link rel="css" href="src/styles/styles.css">
+        
+        <!--========== PAGES ==========-->
+        <link rel="css" href="src/styles/pages/about.css">
+        <link rel="css" href="src/styles/pages/home.css">
+
+        <!--========== COMPONENTS ==========-->
+        <link rel="css" href="src/styles/components/footer.css">
+        <link rel="css" href="src/styles/components/header.css">
+        <link rel="css" href="src/styles/components/navbar.css">
+
+
+        <!-- Assets -->
+         
+        <script type="module">import init from '/index-6f188a2a27be3cec.js';init('/index-6f188a2a27be3cec_bg.wasm');</script>
+        <!--========== BOX ICONS ==========-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    
+<link rel="preload" href="/index-6f188a2a27be3cec_bg.wasm" as="fetch" type="application/wasm" crossorigin="">
+<link rel="modulepreload" href="/index-6f188a2a27be3cec.js"></head>
+    <body>
+        <header>
+        </header>
+        <main>
+        </main>
+        <!--========== MAIN JS ==========-->
+        <script type="module" src="assets/js/main.js"></script>
+        <script data-trunk="" rel="inline" type="module" src="assets/js/main.js"></script>
+        <!-- JS Interop -->
+        <script crossorigin="false" src="assets/js/main.js"></script>
+        <link data="" trunk="" rel="trunk-dist" href="assets/js/main.js"> 
+    
+<script>(function () {
+    var url = 'ws://' + window.location.host + '/_trunk/ws';
+    var poll_interval = 5000;
+    var reload_upon_connect = () => {
+        window.setTimeout(
+            () => {
+                // when we successfully reconnect, we'll force a
+                // reload (since we presumably lost connection to
+                // trunk due to it being killed, so it will have
+                // rebuilt on restart)
+                var ws = new WebSocket(url);
+                ws.onopen = () => window.location.reload();
+                ws.onclose = reload_upon_connect;
+            },
+            poll_interval);
+    };
+
+    var ws = new WebSocket(url);
+    ws.onmessage = (ev) => {
+        const msg = JSON.parse(ev.data);
+        if (msg.reload) {
+            window.location.reload();
+        }
+    };
+    ws.onclose = reload_upon_connect;
+})()
+</script></body></html>

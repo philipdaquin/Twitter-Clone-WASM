@@ -1,0 +1,59 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.32"
+js-sys = "0.3.56"
+yew = "0.19.3"
+yew-router = "0.16.0"
+yew_styles = "0.11.0"
+yew-hooks ="0.1.36"
+
+yew-interop = {version = "0.3", features = ["script"]}
+serde = {version="1.0", features=["derive"]}
+wee_alloc = "0.4.5"
+wasm-bindgen = "0.2.79"
+wasm-logger = "0.2.0"
+
+[dependencies.web-sys]
+version = "0.3.56"
+features = [
+    'Headers',
+    'Request',
+    'RequestInit',
+    'RequestMode',
+    'Response',
+    'Window',
+    'Document',
+    'Element',
+    'HtmlElement',
+    'HtmlInputElement',
+    'HtmlButtonElement',
+    'HtmlFormElement',
+    'HtmlCollection',
+    'MouseEvent',
+    'Node',
+    'History',
+    'Event',
+    'EventTarget',
+    'ErrorEvent',
+    'Location',
+    'console',
+    'MouseEvent',
+    'DomRect',
+]
+
+[profile.release]
+# Less code to include into binary
+panic = 'abort'
+# Optimization over all codebase ( better optimization, slower build )
+codegen-units = 1
+# Optimization for size ( most aggressive )
+opt-level = 'z'
+# Link time optimization using using whole-program analysis
+lto = true
+debug =true
