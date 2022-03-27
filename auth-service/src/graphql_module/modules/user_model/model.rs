@@ -1,8 +1,10 @@
 use crate::schema::users;
 use chrono::{NaiveDateTime, Local};
+use diesel::AsChangeset;
 use serde::{Serialize, Deserialize};
 
-#[derive(Identifiable, Debug, Serialize, Deserialize, Queryable)]
+#[derive(Identifiable, Debug, Clone, PartialEq,
+    Serialize, Deserialize, Queryable)]
 #[table_name = "users"]
 pub struct UserObject { 
     id: i32, 
@@ -11,14 +13,15 @@ pub struct UserObject {
     first_name: String, 
     last_name: String, 
     username: String, 
-    location: String,
+    location: Option<String>,
     email: String, 
     hash: String,
     
     role: String
 }
 
-#[derive(Insertable, Deserialize, Serialize, Debug)]
+#[derive(Insertable, Deserialize, 
+    Serialize, Debug, AsChangeset, Clone, PartialEq)]
 #[table_name = "users"]
 pub struct NewUser { 
     id: i32, 
@@ -27,7 +30,7 @@ pub struct NewUser {
     first_name: String, 
     last_name: String, 
     username: String, 
-    location: String,
+    location: Option<String>,
     email: String, 
     hash: String,
     
