@@ -18,6 +18,9 @@ impl Component for About {
     fn view(&self, ctx: &Context<Self>) -> Html {
         html! {
             <>
+                <div class="text-3xl font-bold underline">
+                    {"Hello From Tailwind!"}
+                </div>
                 <img src="https://http.cat/404.jpg" />
             </>
         }
