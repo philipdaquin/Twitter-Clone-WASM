@@ -1,4 +1,4 @@
-use auth_service::server::new_server;
+use blog_service::server::new_server;
 use failure::Error;
 
 

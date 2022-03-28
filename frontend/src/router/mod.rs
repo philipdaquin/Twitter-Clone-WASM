@@ -1,6 +1,13 @@
 pub mod about;
 pub mod home;
-use crate::router::{home::Home, about::About};
+pub mod follow;
+pub mod contact;
+
+use crate::router::{
+    contact::Contact,
+    follow::Follow,
+    home::Home, 
+    about::About};
 use yew_router::prelude::*;
 use yew::prelude::*;
 
@@ -12,6 +19,11 @@ pub enum AppRoute {
     #[at("/about")]
     About,
 
+    #[at("/contact")]
+    ContactUs,
+
+    #[at("/follow")]
+    FollowUser,
     
 }
 
@@ -19,5 +31,7 @@ pub fn switch(routes: &AppRoute) -> Html {
      match routes { 
         AppRoute::Home => html! { <Home/>},
         AppRoute::About => html! { <About/>},
+        AppRoute::ContactUs => html! { <Contact/>},
+        AppRoute::FollowUser => html! { <Follow/>} 
     }
 }
