@@ -7,7 +7,12 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4.0.1"
+async-graphql = "3.0.36"
 chrono = "0.4.19"
+diesel = "1.4.8"
 jsonwebtoken = "8.0.1"
 lazy_static = "1.4.0"
 serde = "1.0.136"
+strum = "0.24.0"
+strum_macros = "0.24.0"
+thiserror = "1.0.30"
