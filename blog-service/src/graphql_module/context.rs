@@ -1,12 +1,12 @@
 
 use actix_cors::Cors;
-use actix_web::{get, middleware::Logger, route, web, App, HttpServer, Responder, HttpRequest};
+use actix_web::{get, middleware::Logger, route, web, App, HttpServer, Responder, HttpRequest, HttpResponse};
 use actix_web_lab::respond::Html;
 use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
     EmptyMutation, EmptySubscription, Schema, Context,
 };
-use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
+use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse, GraphQLSubscription};
 use crate::db::{DbPool, DbPooledConnection};
 use super::schema::{Mutation, Query, AppSchema, AppSchemaBuilder};
 use diesel::{result::Error as DbError, QueryDsl};
@@ -37,6 +37,7 @@ pub async fn graphql_playground() -> impl Responder {
         GraphQLPlaygroundConfig::new("/graphql").subscription_endpoint("/graphql"),
     ))
 }
+
 embed_migrations!();
 
 pub fn create_schema(pool: DbPool) -> AppSchema { 

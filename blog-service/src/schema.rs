@@ -1,7 +1,7 @@
 table! {
     posts (id) {
-        id -> Uuid,
-        author_id -> Uuid,
+        id -> Int4,
+        author_id -> Int4,
         slug -> Varchar,
         created_at -> Timestamp,
         updated_at -> Timestamp,

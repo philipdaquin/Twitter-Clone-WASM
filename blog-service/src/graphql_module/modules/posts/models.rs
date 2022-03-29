@@ -4,11 +4,11 @@ use chrono::NaiveDateTime;
 use serde::{Serialize, Deserialize};
 use crate::schema::posts;
 
-#[derive(Serialize, Identifiable, Deserialize, Debug, Queryable, Clone)]
+#[derive(Serialize, Identifiable, Deserialize, AsChangeset, Debug, Queryable, Clone)]
 #[table_name = "posts"]
 pub struct Post { 
-    pub id: Uuid,
-    pub author_id: Uuid,
+    pub id: i32,
+    pub author_id: i32,
     pub slug: String, 
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime, 
