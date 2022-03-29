@@ -9,10 +9,6 @@ use jsonwebtoken::{encode, decode, DecodingKey,
 use strum_macros::{Display, EnumString};
 use super::error::ServerError;
 
-
-
-
-
 lazy_static! {
     static ref JWT_SECRET_KEY: String = var("JWT_SECRET_KEY").expect("JWT Secret Key Error");
 }

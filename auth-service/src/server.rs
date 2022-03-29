@@ -6,9 +6,8 @@ use async_graphql::{
     EmptyMutation, EmptySubscription, Schema,
 };
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
-use crate::graphql_module::context::{graphql, graphql_playground, create_schema, run_migrations};
+use crate::graphql_module::context::{graphql, graphql_playground, configure_service, create_schema, run_migrations};
 use crate::db::{DatabaseKind, establish_connection};
-
 
 pub async fn new_server(port: u32) -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
@@ -23,8 +22,7 @@ pub async fn new_server(port: u32) -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(schema.clone())
-            .service(graphql)
-            .service(graphql_playground)
+            .configure(configure_service)
             .wrap(Cors::permissive())
             .wrap(Logger::default())
     })

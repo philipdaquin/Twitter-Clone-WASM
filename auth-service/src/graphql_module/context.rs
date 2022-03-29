@@ -13,6 +13,12 @@ use diesel::{result::Error as DbError, QueryDsl};
 use diesel_migrations::{MigrationError, embed_migrations};
 
 
+pub fn configure_service(cfg: &mut web::ServiceConfig) { 
+    cfg
+    .service(graphql)
+    .service(graphql_playground);
+}
+
 /// GraphQL endpoint
 #[route("/graphql", method = "GET", method = "POST")]
 pub async fn graphql(schema: web::Data<AppSchema>, req: GraphQLRequest) -> GraphQLResponse {
