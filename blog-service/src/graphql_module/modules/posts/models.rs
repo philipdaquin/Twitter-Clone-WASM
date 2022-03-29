@@ -1,4 +1,4 @@
-use diesel::{Queryable, AsChangeset};
+use diesel::{Queryable, AsChangeset, Insertable};
 use uuid::Uuid;
 use chrono::NaiveDateTime;
 use serde::{Serialize, Deserialize};
@@ -18,10 +18,9 @@ pub struct Post {
     pub featured_image: String
 }
 
-
+#[derive(Insertable, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[table_name = "posts"]
 pub struct FormPost { 
-    pub id: Uuid,
-    pub author_id: Uuid,
     pub slug: String, 
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime, 
