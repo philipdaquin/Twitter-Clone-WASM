@@ -1,6 +1,6 @@
 
 use actix_cors::Cors;
-use actix_web::{get, middleware::Logger, route, web, App, HttpServer, Responder};
+use actix_web::{get, middleware::Logger, route, web, App, HttpServer, Responder, HttpRequest};
 use actix_web_lab::respond::Html;
 use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
@@ -11,7 +11,7 @@ use crate::db::{DbPool, DbPooledConnection};
 use super::schema::{Mutation, Query, AppSchema, AppSchemaBuilder};
 use diesel::{result::Error as DbError, QueryDsl};
 use diesel_migrations::{MigrationError, embed_migrations};
-
+use common::token::{get_role};
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 
     cfg
@@ -21,8 +21,14 @@ pub fn configure_service(cfg: &mut web::ServiceConfig) {
 
 /// GraphQL endpoint
 #[route("/graphql", method = "GET", method = "POST")]
-pub async fn graphql(schema: web::Data<AppSchema>, req: GraphQLRequest) -> GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
+pub async fn graphql(schema: web::Data<AppSchema>, req: GraphQLRequest, http: HttpRequest) -> GraphQLResponse {
+    
+    let (role, 
+        mut request) = (get_role(http), req.into_inner());
+    if let Some(user) = role { 
+        request = request.data(user);
+    }
+    schema.execute(request).await.into()
 }
 /// GraphiQL playground UI
 #[get("/graphiql")]

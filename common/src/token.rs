@@ -1,5 +1,5 @@
 use std::{env::var, str::FromStr};
-use actix_web::HttpResponse;
+use actix_web::{HttpResponse, HttpRequest};
 use chrono::{Duration, Local};
 use serde::{Deserialize, Serialize};
 use jsonwebtoken::{encode, decode, DecodingKey, 
@@ -55,7 +55,7 @@ pub fn decode_token(token: &str) -> Result<TokenData<Claim>, JsonError> {
     )?)
 }
 
-pub fn get_role(req: HttpResponse) -> Option<Role> { 
+pub fn get_role(req: HttpRequest) -> Option<Role> { 
     req
     .headers()
     .get("Authorization")
