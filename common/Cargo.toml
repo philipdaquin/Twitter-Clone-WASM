@@ -6,3 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-web = "4.0.1"
+chrono = "0.4.19"
+jsonwebtoken = "8.0.1"
+lazy_static = "1.4.0"
+serde = "1.0.136"
