@@ -1,5 +1,4 @@
 use diesel::{Queryable, AsChangeset, Insertable};
-use uuid::Uuid;
 use chrono::NaiveDateTime;
 use serde::{Serialize, Deserialize};
 use crate::schema::posts;
