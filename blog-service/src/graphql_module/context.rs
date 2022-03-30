@@ -1,6 +1,6 @@
 
 use actix_cors::Cors;
-use actix_web::{get, middleware::Logger, route, web, App, HttpServer, Responder, HttpRequest, HttpResponse};
+use actix_web::{get, middleware::Logger, Error,  route, web::{self}, App, HttpServer, Responder, HttpRequest, HttpResponse, guard};
 use actix_web_lab::respond::Html;
 use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
@@ -16,7 +16,14 @@ use common::token::{get_role};
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 
     cfg
     .service(graphql)
-    .service(graphql_playground);
+    .service(graphql_playground)
+    .service(
+        web::resource("/graphiql")
+            .route(web::get()
+                .guard(guard::Header("upgrade", "websocket"))
+                .to(index_ws)
+        )
+    );
 }
 
 /// GraphQL endpoint
@@ -36,6 +43,15 @@ pub async fn graphql_playground() -> impl Responder {
     Html(playground_source(
         GraphQLPlaygroundConfig::new("/graphql").subscription_endpoint("/graphql"),
     ))
+}
+
+pub async fn index_ws(
+    schema: web::Data<AppSchema>, 
+    req: HttpRequest, 
+    payload: web::Payload
+) -> Result<HttpResponse, Error> { 
+    GraphQLSubscription::new(Schema::clone(&*schema))
+    .start(&req, payload)
 }
 
 embed_migrations!();
