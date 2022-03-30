@@ -18,9 +18,7 @@ fn init_pool(database_url: &str) -> Result<DbPool, PoolError> {
 
 pub fn establish_connection(db_kind: DatabaseKind) -> DbPool {
     dotenv().ok();
-
     let postgres_db_host = env::var("POSTGRES_DB_HOST").expect("POSTGRES_DB_HOST must be set");
-
     let postgres_db = match db_kind {
         DatabaseKind::Example => env::var("POSTGRES_DB").expect("POSTGRES_DB must be set"),
         _ => env::var("POSTGRES_DB_TEST").expect("POSTGRES_DB_TEST must be set"),

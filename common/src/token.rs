@@ -27,6 +27,7 @@ pub enum Role {
     Admin, 
     User
 }
+
 pub fn generate_token(username: String, role: Role) -> String { 
     let issuer = var("DOMAIN")
         .unwrap_or_else(|_| "LocalHost".to_string());

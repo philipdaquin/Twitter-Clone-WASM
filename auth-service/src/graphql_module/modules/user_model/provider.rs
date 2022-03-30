@@ -3,7 +3,6 @@ use crate::schema::users;
 use diesel::prelude::*;
 
 
-
 pub fn get_all_users(conn: &PgConnection) -> QueryResult<Vec<UserObject>> {
     use crate::schema::users::dsl::*;
     users.load(conn)
