@@ -20,6 +20,8 @@ pub struct Post {
 #[derive(Insertable, Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[table_name = "posts"]
 pub struct FormPost { 
+    pub id: i32,
+    pub author_id: i32,
     pub slug: String, 
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime, 
@@ -28,3 +30,28 @@ pub struct FormPost {
     pub body: String,
     pub featured_image: String
 }
+
+
+pub const POSTCOLUMNS: PostColumn = (
+    posts::id,
+    posts::author_id,
+    posts::slug,
+    posts::created_at,
+    posts::updated_at,
+    posts::title,
+    posts::description,
+    posts::body,
+    posts::featured_image,
+);
+
+pub type PostColumn = (
+    posts::id,
+    posts::author_id,
+    posts::slug,
+    posts::created_at,
+    posts::updated_at,
+    posts::title,
+    posts::description,
+    posts::body,
+    posts::featured_image,
+);
