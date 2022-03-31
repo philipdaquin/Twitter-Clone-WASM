@@ -12,7 +12,8 @@ use super::schema::{Mutation as SchemaMutation, Query as SchemaQuery, AppSchema,
 use diesel::{result::Error as DbError, QueryDsl};
 use diesel_migrations::{MigrationError, embed_migrations};
 use common::token::{get_role};
-
+use std::env::var;
+use super::modules::user_model::provider;
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 
     cfg
@@ -46,7 +47,6 @@ pub async fn graphql_playground() -> impl Responder {
     ))
 }
 
-
 pub async fn index_ws(
     schema: web::Data<AppSchema>, 
     req: HttpRequest, 
@@ -64,6 +64,7 @@ pub fn create_schema(pool: DbPool) -> AppSchema {
         SchemaMutation::default(), 
         EmptySubscription
     )
+    .enable_federation()
     // Add a global data that can be accessed in the Schema
     .data(pool)
     .finish()
@@ -71,6 +72,12 @@ pub fn create_schema(pool: DbPool) -> AppSchema {
 pub fn run_migrations(pool: &DbPool) { 
     let conn = pool.get().expect("Database Connection Pool - Migrations error!");
     embedded_migrations::run(&conn).expect("Failed to run database migrations");
+
+    if let Ok(hash) = var("PASSWORD_SECRET_KEY") { 
+        provider::update_password(hash, &conn);
+    }
+
+
 }
 pub fn get_conn_from_ctx(ctx: &Context<'_>) -> DbPooledConnection { 
     ctx.data::<DbPool>()
