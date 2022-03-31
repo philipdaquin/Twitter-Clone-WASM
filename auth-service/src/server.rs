@@ -16,8 +16,8 @@ pub async fn new_server(port: u32) -> std::io::Result<()> {
     run_migrations(&db_pool);
     let schema = web::Data::new(create_schema(db_pool));
 
-    log::info!("starting HTTP server on port 8080");
-    log::info!("GraphiQL playground: http://localhost:8080/graphiql");
+    log::info!("starting HTTP server on port {}", port);
+    log::info!("GraphiQL playground: http://localhost:{}/graphiql", port);
 
     HttpServer::new(move || {
         App::new()

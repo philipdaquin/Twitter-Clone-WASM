@@ -1,6 +1,6 @@
 use std::str::FromStr;
 use crate::schema::users;
-use async_graphql::{SimpleObject, InputObject};
+use async_graphql::{SimpleObject, InputObject, ID};
 use chrono::{NaiveDateTime, Local};
 use diesel::AsChangeset;
 use serde::{Serialize, Deserialize};
@@ -27,8 +27,6 @@ pub struct UserObject {
     Serialize, Debug, AsChangeset, Clone, PartialEq)]
 #[table_name = "users"]
 pub struct NewUser { 
-    id: i32, 
-    created_at: NaiveDateTime,
     first_name: String, 
     last_name: String, 
     username: String, 
@@ -57,11 +55,11 @@ impl From<&UserObject> for User {
 ///  User Mutation Classes types
 #[derive(InputObject)]
 pub struct UserInput { 
-    username: String,
-    password: String, 
-    first_name: String, 
-    last_name: String, 
-    role: Role
+    pub username: String,
+    pub password: String, 
+    pub first_name: String, 
+    pub last_name: String, 
+    pub role: Role
 }
 
 #[derive(InputObject)]

@@ -4,7 +4,7 @@ use crate::graphql_module::{
     context::{get_conn_from_ctx},
     modules::utils::{hash_password, verify_password, is_admin},
 };
-use super::model::{NewUser, User, UserObject};
+use super::model::{NewUser, User, UserObject, UserInput};
 use crate::graphql_module::schema::AppSchema;
 use crate::graphql_module::modules;
 use common::token::Role as AuthRole;
@@ -51,14 +51,23 @@ impl AuthUser  {
         provider::get_user_by_username(user_username, conn)
             .ok()
             .map(|x| User::from(&x))
+    }
 }
+
 #[derive(Default)]
 pub struct UserMutate;
-#[Object]
-impl UserMutate { 
-    async fn register() -> User { 
 
+impl UserMutate { 
+    // #[graphql(name = "registerUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
+    async fn register_user(&self, ctx: &Context<'_>, user: UserInput) -> User { 
+        let new_user = NewUser  { 
+            first_name: user.first_name,
+            last_name: user.last_name,
+            username: user.username, 
+            
+        };
     }
+    async fn update_user() -> User {}
     async fn sign_in() -> User { 
 
     }
