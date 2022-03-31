@@ -1,10 +1,12 @@
+use std::str::FromStr;
+
 use async_graphql::*;
 use serde::{Deserialize, Serialize};
 use crate::graphql_module::{
     context::{get_conn_from_ctx},
     modules::utils::{hash_password, verify_password, is_admin},
 };
-use super::model::{NewUser, User, UserObject, UserInput};
+use super::model::{NewUser, User, UserObject, UserInput, SignInInput};
 use crate::graphql_module::schema::AppSchema;
 use crate::graphql_module::modules;
 use common::token::Role as AuthRole;
@@ -75,10 +77,20 @@ impl UserMutate {
         let user_created = provider::create_user(new_user, conn).expect("Cannot create user right now");
         User::from(&user_created)
     }
-    // async fn update_user() -> User {}
-    // async fn sign_in() -> User { 
-
-    // }
+    pub async fn sign_in(&self, ctx: &Context<'_>, input: SignInInput) -> Result<String, Error> { 
+        let conn = &get_conn_from_ctx(ctx);
+        
+        let get_user = provider::get_user_by_username(input.username, conn);
+        if let Some(user) = get_user.ok() { 
+            if let Ok(matching) = verify_password(&user.hash,&input.password) { 
+                if matching {
+                    let role = AuthRole::from_str(user.role.as_str()).expect("Unable to convert to AuthRole");
+                    return Ok(common::token::generate_token(user.username, role));
+                }
+            }
+        }
+        Err(Error::new("Unable to Authenticate the User"))
+    }
     // async fn sign_out() -> bool {}
     // async fn delete_user() -> bool {}
 }

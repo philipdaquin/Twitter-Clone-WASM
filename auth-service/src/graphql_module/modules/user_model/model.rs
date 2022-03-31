@@ -11,15 +11,15 @@ use crate::graphql_module::modules::utils::Role;
     Serialize, Deserialize, Queryable)]
 #[table_name = "users"]
 pub struct UserObject { 
-    id: i32, 
-    created_at: NaiveDateTime,
-    first_name: String, 
-    last_name: String, 
-    username: String, 
-    location: Option<String>,
-    email: String, 
-    hash: String,
-    role: String
+    pub id: i32, 
+    pub created_at: NaiveDateTime,
+    pub first_name: String, 
+    pub last_name: String, 
+    pub username: String, 
+    pub location: Option<String>,
+    pub email: String, 
+    pub hash: String,
+    pub role: String
 }
 
 ///  User Query Related Classes
@@ -66,8 +66,8 @@ pub struct UserInput {
 
 #[derive(InputObject)]
 pub struct SignInInput { 
-    username: String, 
-    password: String 
+    pub username: String, 
+    pub password: String 
 }
 
 
