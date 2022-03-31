@@ -1,5 +1,5 @@
 use std::str::FromStr;
-
+use async_graphql::{Error};
 use async_graphql::*;
 use serde::{Deserialize, Serialize};
 use crate::graphql_module::{
@@ -14,55 +14,58 @@ use crate::graphql_module::modules::utils::RoleGuard;
 // use crate::graphql_module::modules::user_model::provider;
 use super::provider;
 
-
 #[derive(Default)]
 pub struct AuthUser;
 
 #[Object]
 impl AuthUser  { 
     #[graphql(name = "getAllUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    pub async fn get_all(&self, ctx: &Context<'_>) -> Vec<User> { 
+    pub async fn get_all(&self, ctx: &Context<'_>) -> Result<Vec<User>, Error> { 
         let conn = &get_conn_from_ctx(ctx);
-        provider::get_all_users(conn)
+        let users = provider::get_all_users(conn)
             .expect("Cannot get Users")
             .iter()
             .map(User::from)
-            .collect()
+            .collect();
+        Ok(users)
     }
     #[graphql(name = "getAllbyEmail", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    pub async fn get_users_by_email(&self, ctx: &Context<'_>, user_email: String) -> Option<User> { 
+    pub async fn get_users_by_email(&self, ctx: &Context<'_>, user_email: String) -> Result<Option<User>, Error> { 
         let conn = &get_conn_from_ctx(ctx);
-        provider::get_user_by_email(user_email, conn)
+        let user = provider::get_user_by_email(user_email, conn)
             .ok()
-            .map(|x| User::from(&x))
+            .map(|x| User::from(&x));
+        Ok(user)
     }
     #[graphql(name = "getAllbyId", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    pub async fn get_users_by_id(&self, ctx: &Context<'_>, id: ID) -> Option<User> { 
+    pub async fn get_users_by_id(&self, ctx: &Context<'_>, id: ID) -> Result<Option<User>, Error> { 
         let conn = &get_conn_from_ctx(ctx);
         let id = id
             .to_string()   
             .parse::<i32>() 
             .expect("Unable to get Id from String");
-        provider::get_user_by_id(id, conn)
+        let user = provider::get_user_by_id(id, conn)
             .ok()
-            .map(|x| User::from(&x))
+            .map(|x| User::from(&x));
+        Ok(user)
     }
     #[graphql(name = "getAllbyusername", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    pub async fn get_users_by_username(&self, ctx: &Context<'_>, user_username: String) -> Option<User> { 
+    pub async fn get_users_by_username(&self, ctx: &Context<'_>, user_username: String) -> Result<Option<User>, Error> { 
         let conn = &get_conn_from_ctx(ctx);
-        provider::get_user_by_username(user_username, conn)
+        let user = provider::get_user_by_username(user_username, conn)
             .ok()
-            .map(|x| User::from(&x))
+            .map(|x| User::from(&x));
+
+        Ok(user)
     }
 }
-
 #[derive(Default)]
 pub struct UserMutate;
 
 #[Object]
 impl UserMutate { 
     #[graphql(name = "registerUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    pub async fn register_user(&self, ctx: &Context<'_>, user: UserInput) -> User { 
+    pub async fn register_user(&self, ctx: &Context<'_>, user: UserInput) -> Result<User, Error> { 
         let conn = &get_conn_from_ctx(ctx);
         
         let new_user = NewUser  { 
@@ -75,7 +78,7 @@ impl UserMutate {
             role: user.role.to_string()
         };
         let user_created = provider::create_user(new_user, conn).expect("Cannot create user right now");
-        User::from(&user_created)
+        Ok(User::from(&user_created))
     }
     pub async fn sign_in(&self, ctx: &Context<'_>, input: SignInInput) -> Result<String, Error> { 
         let conn = &get_conn_from_ctx(ctx);

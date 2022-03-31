@@ -53,7 +53,7 @@ impl From<&UserObject> for User {
     }
 }
 ///  User Mutation Classes types
-#[derive(InputObject, Deserialize, Serialize)]
+#[derive(InputObject, Deserialize, Serialize, Clone)]
 pub struct UserInput { 
     pub username: String,
     pub password: String, 
@@ -64,7 +64,7 @@ pub struct UserInput {
     pub role: Role
 }
 
-#[derive(InputObject, Deserialize, Serialize)]
+#[derive(InputObject, Deserialize, Serialize, Clone)]
 pub struct SignInInput { 
     pub username: String, 
     pub password: String 
