@@ -24,7 +24,7 @@ impl AuthUser  {
     pub async fn get_all(&self, ctx: &Context<'_>) -> Vec<User> { 
         let conn = &get_conn_from_ctx(ctx);
         provider::get_all_users(conn)
-            .expect("")
+            .expect("Cannot get Users")
             .iter()
             .map(User::from)
             .collect()

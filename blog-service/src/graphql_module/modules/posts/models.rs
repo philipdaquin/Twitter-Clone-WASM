@@ -1,3 +1,4 @@
+use async_graphql::ID;
 use diesel::{Queryable, AsChangeset, Insertable};
 use chrono::NaiveDateTime;
 use serde::{Serialize, Deserialize};
@@ -20,16 +21,15 @@ pub struct PostObject {
 #[derive(Insertable, Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[table_name = "posts"]
 pub struct FormPost { 
-    pub id: i32,
-    pub author_id: i32,
     pub slug: String, 
     pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime, 
+    pub updated_at: Option<NaiveDateTime>, 
     pub title: String, 
     pub description: String, 
     pub body: String,
     pub featured_image: String
 }
+
 
 
 pub const POSTCOLUMNS: PostColumn = (
