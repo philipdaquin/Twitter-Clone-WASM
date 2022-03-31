@@ -30,10 +30,12 @@ pub fn configure_service(cfg: &mut web::ServiceConfig) {
 
 /// GraphQL endpoint
 #[route("/graphql", method = "GET", method = "POST")]
-pub async fn graphql(schema: web::Data<AppSchema>, req: GraphQLRequest, http: HttpRequest) -> GraphQLResponse {
-    
-    let (role, 
-        mut request) = (get_role(http), req.into_inner());
+pub async fn graphql(
+    schema: web::Data<AppSchema>, 
+    req: GraphQLRequest, 
+    http: HttpRequest
+) -> GraphQLResponse {    
+    let (role, mut request) = (get_role(http), req.into_inner());
     if let Some(user) = role { 
         request = request.data(user);
     }
@@ -72,12 +74,10 @@ pub fn create_schema(pool: DbPool) -> AppSchema {
 pub fn run_migrations(pool: &DbPool) { 
     let conn = pool.get().expect("Database Connection Pool - Migrations error!");
     embedded_migrations::run(&conn).expect("Failed to run database migrations");
-
+    
     if let Ok(hash) = var("PASSWORD_SECRET_KEY") { 
         provider::update_password(hash, &conn);
-    }
-
-
+    };
 }
 pub fn get_conn_from_ctx(ctx: &Context<'_>) -> DbPooledConnection { 
     ctx.data::<DbPool>()
