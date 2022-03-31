@@ -37,10 +37,10 @@ pub struct NewUser {
 }
 #[derive(SimpleObject)]
 pub struct User { 
-    username: String, 
-    first_name: String,
-    last_name: String, 
-    role: Role
+    pub username: String, 
+    pub first_name: String,
+    pub last_name: String, 
+    pub role: Role
 }
 impl From<&UserObject> for User { 
     fn from(oop: &UserObject) -> Self {
@@ -53,7 +53,7 @@ impl From<&UserObject> for User {
     }
 }
 ///  User Mutation Classes types
-#[derive(InputObject)]
+#[derive(InputObject, Deserialize, Serialize)]
 pub struct UserInput { 
     pub username: String,
     pub password: String, 
@@ -64,7 +64,7 @@ pub struct UserInput {
     pub role: Role
 }
 
-#[derive(InputObject)]
+#[derive(InputObject, Deserialize, Serialize)]
 pub struct SignInInput { 
     pub username: String, 
     pub password: String 

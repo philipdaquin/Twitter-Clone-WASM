@@ -5,7 +5,7 @@ use crate::schema::posts;
 
 #[derive(Serialize, Identifiable, Deserialize, AsChangeset, Debug, Queryable, Clone)]
 #[table_name = "posts"]
-pub struct Post { 
+pub struct PostObject { 
     pub id: i32,
     pub author_id: i32,
     pub slug: String, 
