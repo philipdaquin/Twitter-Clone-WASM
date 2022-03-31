@@ -10,6 +10,8 @@ use crate::graphql_module::context::{graphql, graphql_playground, configure_serv
 use crate::db::{DatabaseKind, establish_connection};
 
 pub async fn new_server(port: u32) -> std::io::Result<()> {
+    
+    
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     let db_pool = establish_connection(DatabaseKind::Example);

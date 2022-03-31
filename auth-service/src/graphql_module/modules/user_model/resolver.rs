@@ -57,20 +57,28 @@ impl AuthUser  {
 #[derive(Default)]
 pub struct UserMutate;
 
+#[Object]
 impl UserMutate { 
-    // #[graphql(name = "registerUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    async fn register_user(&self, ctx: &Context<'_>, user: UserInput) -> User { 
+    #[graphql(name = "registerUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
+    pub async fn register_user(&self, ctx: &Context<'_>, user: UserInput) -> User { 
+        let conn = &get_conn_from_ctx(ctx);
+        
         let new_user = NewUser  { 
             first_name: user.first_name,
             last_name: user.last_name,
             username: user.username, 
-            
+            location: Some(user.location),
+            email: user.email,
+            hash: hash_password(user.password.as_str()).expect("Unable to hash user password"),
+            role: user.role.to_string()
         };
+        let user_created = provider::create_user(new_user, conn).expect("Cannot create user right now");
+        User::from(&user_created)
     }
-    async fn update_user() -> User {}
-    async fn sign_in() -> User { 
+    // async fn update_user() -> User {}
+    // async fn sign_in() -> User { 
 
-    }
-    async fn sign_out() -> bool {}
-    async fn delete_user() -> bool {}
+    // }
+    // async fn sign_out() -> bool {}
+    // async fn delete_user() -> bool {}
 }

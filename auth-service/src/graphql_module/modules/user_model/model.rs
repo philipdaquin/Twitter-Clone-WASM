@@ -27,13 +27,13 @@ pub struct UserObject {
     Serialize, Debug, AsChangeset, Clone, PartialEq)]
 #[table_name = "users"]
 pub struct NewUser { 
-    first_name: String, 
-    last_name: String, 
-    username: String, 
-    location: Option<String>,
-    email: String, 
-    hash: String,
-    role: String
+    pub first_name: String, 
+    pub last_name: String, 
+    pub username: String, 
+    pub location: Option<String>,
+    pub email: String, 
+    pub hash: String,
+    pub role: String
 }
 #[derive(SimpleObject)]
 pub struct User { 
@@ -59,6 +59,8 @@ pub struct UserInput {
     pub password: String, 
     pub first_name: String, 
     pub last_name: String, 
+    pub location: String,
+    pub email: String, 
     pub role: Role
 }
 
