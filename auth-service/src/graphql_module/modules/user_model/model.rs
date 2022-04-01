@@ -7,7 +7,7 @@ use serde::{Serialize, Deserialize};
 use crate::graphql_module::modules::utils::Role;
 
 //  Database Models
-#[derive(Identifiable, Debug, Clone, PartialEq,
+#[derive(Identifiable, Debug, Clone, PartialEq, 
     Serialize, Deserialize, Queryable)]
 #[table_name = "users"]
 pub struct UserObject { 
@@ -23,7 +23,7 @@ pub struct UserObject {
 }
 
 ///  User Query Related Classes
-#[derive(Insertable, Deserialize, 
+#[derive(Insertable, Deserialize, SimpleObject,
     Serialize, Debug, AsChangeset, Clone, PartialEq)]
 #[table_name = "users"]
 pub struct NewUser { 

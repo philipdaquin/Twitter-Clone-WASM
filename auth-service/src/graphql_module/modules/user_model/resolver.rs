@@ -20,7 +20,11 @@ pub struct AuthUser;
 #[Object]
 impl AuthUser  { 
     #[graphql(name = "getAllUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    pub async fn get_all(&self, ctx: &Context<'_>) -> Result<Vec<User>, Error> { 
+    pub async fn get_all(
+        &self, 
+        ctx: &Context<'_>
+    ) -> Result<Vec<User>, Error> { 
+    
         let conn = &get_conn_from_ctx(ctx);
         let users = provider::get_all_users(conn)
             .expect("Cannot get Users")
@@ -29,16 +33,28 @@ impl AuthUser  {
             .collect();
         Ok(users)
     }
+    
     #[graphql(name = "getAllbyEmail", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    pub async fn get_users_by_email(&self, ctx: &Context<'_>, user_email: String) -> Result<Option<User>, Error> { 
+    pub async fn get_users_by_email(
+        &self, 
+        ctx: &Context<'_>, 
+        user_email: String
+    ) -> Result<Option<User>, Error> { 
+    
         let conn = &get_conn_from_ctx(ctx);
         let user = provider::get_user_by_email(user_email, conn)
             .ok()
             .map(|x| User::from(&x));
         Ok(user)
     }
+    
     #[graphql(name = "getAllbyId", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    pub async fn get_users_by_id(&self, ctx: &Context<'_>, id: ID) -> Result<Option<User>, Error> { 
+    pub async fn get_users_by_id(
+        &self, 
+        ctx: &Context<'_>, 
+        id: ID
+    ) -> Result<Option<User>, Error> { 
+     
         let conn = &get_conn_from_ctx(ctx);
         let id = id
             .to_string()   
@@ -50,7 +66,12 @@ impl AuthUser  {
         Ok(user)
     }
     #[graphql(name = "getAllbyusername", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    pub async fn get_users_by_username(&self, ctx: &Context<'_>, user_username: String) -> Result<Option<User>, Error> { 
+    pub async fn get_users_by_username(
+        &self, 
+        ctx: &Context<'_>,
+        user_username: String
+    ) -> Result<Option<User>, Error> { 
+    
         let conn = &get_conn_from_ctx(ctx);
         let user = provider::get_user_by_username(user_username, conn)
             .ok()
@@ -65,7 +86,12 @@ pub struct UserMutate;
 #[Object]
 impl UserMutate { 
     #[graphql(name = "registerUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
-    pub async fn register_user(&self, ctx: &Context<'_>, user: UserInput) -> Result<User, Error> { 
+    pub async fn register_user(
+        &self, 
+        ctx: &Context<'_>, 
+        user: UserInput
+    ) -> Result<User, Error> { 
+    
         let conn = &get_conn_from_ctx(ctx);
         
         let new_user = NewUser  { 
@@ -80,7 +106,12 @@ impl UserMutate {
         let user_created = provider::create_user(new_user, conn).expect("Cannot create user right now");
         Ok(User::from(&user_created))
     }
-    pub async fn sign_in(&self, ctx: &Context<'_>, input: SignInInput) -> Result<String, Error> { 
+    pub async fn sign_in(
+        &self, 
+        ctx: &Context<'_>, 
+        input: SignInInput
+    ) -> Result<String, Error> { 
+    
         let conn = &get_conn_from_ctx(ctx);
         
         let get_user = provider::get_user_by_username(input.username, conn);
@@ -94,6 +125,7 @@ impl UserMutate {
         }
         Err(Error::new("Unable to Authenticate the User"))
     }
-    // async fn sign_out() -> bool {}
-    // async fn delete_user() -> bool {}
+    pub async fn sign_out(&self, ctx: &Context<'_>) -> Result<bool, Error> {
+        todo!()
+    }
 }

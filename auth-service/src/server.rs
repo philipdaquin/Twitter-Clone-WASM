@@ -18,6 +18,8 @@ pub async fn new_server(port: u32) -> std::io::Result<()> {
 
     log::info!("starting HTTP server on port {}", port);
     log::info!("GraphiQL playground: http://localhost:{}/graphiql", port);
+    log::info!("{}", &schema.sdl());
+
 
     HttpServer::new(move || {
         App::new()
