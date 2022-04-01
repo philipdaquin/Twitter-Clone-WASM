@@ -62,6 +62,7 @@ pub fn create_schema(pool: DbPool) -> AppSchema {
         Mutation::default(), 
         EmptySubscription
     )
+    .enable_federation()
     // Add a global data that can be accessed in the Schema
     .data(pool)
     .finish()

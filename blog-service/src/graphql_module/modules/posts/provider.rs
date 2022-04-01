@@ -14,6 +14,10 @@ pub fn get_id(id: i32, conn: &PgConnection) -> QueryResult<PostObject> {
         .find(id)
         .first::<PostObject>(conn)
 }
+pub fn get_by_author(author_id: i32, conn: &PgConnection) -> QueryResult<Vec<PostObject>> { 
+    use crate::schema::posts::dsl::*;
+    posts.find(author_id).load(conn)
+}
 // pub fn get_for_user(conn: &PgConnection, user_id: i32) -> QueryResult<>
 pub fn create_post(form: FormPost, conn: &PgConnection) -> QueryResult<PostObject> {
     //  insert user_id as author_id 
