@@ -82,15 +82,16 @@ impl PostMutation {
         form: PostInput,
         post_id: ID
     ) -> Result<Posts, Error> {
-        let conn = get_conn_from_ctx(ctx);
-        let post_id = post_id
-            .to_string()
-            .parse::<i32>()
-            .expect("Could not Parse POst Id to int");
-        let post = provider::update_post(post_id, form, &conn)
-            .expect("")
-            .map(Posts::from);
-        Ok(post)
+        // let conn = get_conn_from_ctx(ctx);
+        // let post_id = post_id
+        //     .to_string()
+        //     .parse::<i32>()
+        //     .expect("Could not Parse POst Id to int");
+        // let post = provider::update_post( form, &conn)
+        //     .expect("")
+        //     .map(Posts::from);
+        // Ok(post)
+        todo!()
     }
     #[graphql(name = "deletePosts")]
     async fn delete_post(&self, ctx: &Context<'_>) -> Result<bool, Error> { 

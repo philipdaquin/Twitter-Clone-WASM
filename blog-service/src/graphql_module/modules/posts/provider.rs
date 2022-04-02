@@ -41,9 +41,10 @@ pub fn delete_post(post_author: i32, post_id: i32, conn: &PgConnection) -> Query
 }
 
 pub fn update_post(form: FormPost, conn: &PgConnection) -> QueryResult<PostObject> { 
-    let post_id = form.id.ok_or(DbError::NotFound)?;
-    diesel::update(posts::table.find(post_id))
-        .set(form)
-        .returning(POSTCOLUMNS)
-        .get_result::<PostObject>(conn)
+    // let post_id = form.id.ok_or(DbError::NotFound)?;
+    // diesel::update(posts::table.find(post_id))
+    //     .set(form)
+    //     .returning(POSTCOLUMNS)
+    //     .get_result::<PostObject>(conn)
+    todo!()
 }
