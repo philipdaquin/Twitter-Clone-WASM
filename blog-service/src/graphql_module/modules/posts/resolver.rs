@@ -100,7 +100,6 @@ impl PostMutation {
 }
 
 
-
 #[Object]
 impl Posts  { 
     async fn id(&self) -> ID { 

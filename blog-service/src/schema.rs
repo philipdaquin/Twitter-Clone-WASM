@@ -1,4 +1,13 @@
 table! {
+    comments (id) {
+        id -> Int4,
+        user_id -> Int4,
+        post_id -> Int4,
+        body -> Text,
+    }
+}
+
+table! {
     posts (id) {
         id -> Int4,
         author_id -> Int4,
@@ -11,3 +20,10 @@ table! {
         featured_image -> Text,
     }
 }
+
+joinable!(comments -> posts (post_id));
+
+allow_tables_to_appear_in_same_query!(
+    comments,
+    posts,
+);

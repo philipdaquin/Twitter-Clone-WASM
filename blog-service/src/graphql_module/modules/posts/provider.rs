@@ -27,7 +27,6 @@ pub fn create_post(form: FormPost, conn: &PgConnection) -> QueryResult<PostObjec
         .on_conflict_do_nothing()
         .get_result::<PostObject>(conn)
 }
-
 pub fn delete_post(post_author: i32, post_id: i32, conn: &PgConnection) -> QueryResult<bool> { 
     use crate::schema::posts::dsl::*;
 
