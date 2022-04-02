@@ -14,6 +14,7 @@ pub struct PostQuery;
 
 #[Object]
 impl PostQuery { 
+    #[graphql(name = "getPosts")]
     async fn get_posts(&self, ctx: &Context<'_>) -> Vec<Posts> {
         let conn = get_conn_from_ctx(ctx);
         provider::get_all(&conn)
@@ -22,6 +23,7 @@ impl PostQuery {
             .map(Posts::from)
             .collect()
     }
+    #[graphql(name = "getPostbyId")]
     async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Result<Option<Posts>, Error> { 
         let conn = get_conn_from_ctx(ctx);
         let id = post_id
@@ -34,6 +36,7 @@ impl PostQuery {
         Ok(post)
 
     }
+    #[graphql(name = "getPostsbyAuthor")]
     async fn get_post_by_authorid(&self, ctx: &Context<'_>, user_id: ID) -> Result<Vec<Posts>, Error> { 
         let conn = get_conn_from_ctx(ctx);
         let author_id = user_id
@@ -48,23 +51,23 @@ impl PostQuery {
         Ok(post_by)
     }
 }
-
 #[derive(Default)]
 pub struct PostMutation;
 
 #[Object]
 impl PostMutation { 
+    #[graphql(name = "createPosts")]
     async fn create_post(&self, ctx: &Context<'_>, form: PostInput) -> Result<Posts, Error> {
         let conn = get_conn_from_ctx(ctx);
         
         let new_post = FormPost { 
-            slug: form.slug,
+            slug: Some(form.slug),
             created_at: Local::now().naive_local(),
             updated_at: None, 
-            title: form.title,
-            description: form.description,
-            body: form.body,
-            featured_image: form.featured_image
+            title: Some(form.title),
+            description: Some(form.description),
+            body: Some(form.body),
+            featured_image: Some(form.featured_image)
         };
         let post = provider::create_post(new_post, &conn)
             .ok()
@@ -72,13 +75,28 @@ impl PostMutation {
             .expect("Unable to convert PostObject to Posts");
         Ok(post)
     }
+    #[graphql(name = "updatePosts")]
+    async fn update_post(
+        &self, 
+        ctx: &Context<'_>, 
+        form: PostInput,
+        post_id: ID
+    ) -> Result<Posts, Error> {
+        let conn = get_conn_from_ctx(ctx);
+        let post_id = post_id
+            .to_string()
+            .parse::<i32>()
+            .expect("Could not Parse POst Id to int");
+        let post = provider::update_post(post_id, form, &conn)
+            .expect("")
+            .map(Posts::from);
+        Ok(post)
+    }
+    #[graphql(name = "deletePosts")]
     async fn delete_post(&self, ctx: &Context<'_>) -> Result<bool, Error> { 
         Ok(true)
     }
 }
-
-
-
 
 
 
@@ -103,7 +121,6 @@ impl Posts  {
         &self.featured_image
     }
 }
-
 impl From<&PostObject> for Posts { 
     fn from(oop: &PostObject) -> Self {
         Posts { 

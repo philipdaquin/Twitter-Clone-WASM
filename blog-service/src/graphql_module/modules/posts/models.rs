@@ -18,16 +18,17 @@ pub struct PostObject {
     pub featured_image: String
 }
 
-#[derive(Insertable, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Insertable, Serialize, AsChangeset, Deserialize, Debug, Clone, PartialEq)]
 #[table_name = "posts"]
 pub struct FormPost { 
-    pub slug: String, 
+    
+    pub slug: Option<String>, 
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>, 
-    pub title: String, 
-    pub description: String, 
-    pub body: String,
-    pub featured_image: String
+    pub title: Option<String>, 
+    pub description: Option<String>, 
+    pub body: Option<String>,
+    pub featured_image: Option<String>
 }
 #[derive(InputObject)]
 pub struct PostInput { 

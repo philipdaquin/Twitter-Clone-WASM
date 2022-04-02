@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use super::models::{FormPost, PostObject};
 use crate::schema::posts;
 use super::models::POSTCOLUMNS;
-
+use diesel::result::Error as DbError;
 pub fn get_all(conn: &PgConnection) -> QueryResult<Vec<PostObject>> { 
     use crate::schema::posts::dsl::*;
     posts.load(conn)
@@ -40,7 +40,8 @@ pub fn delete_post(post_author: i32, post_id: i32, conn: &PgConnection) -> Query
     Ok(true)
 }
 
-pub fn update_post(post_id: i32, form: PostObject, conn: &PgConnection) -> QueryResult<PostObject> { 
+pub fn update_post(form: FormPost, conn: &PgConnection) -> QueryResult<PostObject> { 
+    let post_id = form.id.ok_or(DbError::NotFound)?;
     diesel::update(posts::table.find(post_id))
         .set(form)
         .returning(POSTCOLUMNS)
