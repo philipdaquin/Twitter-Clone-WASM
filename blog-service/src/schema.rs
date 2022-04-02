@@ -4,6 +4,8 @@ table! {
         user_id -> Int4,
         post_id -> Int4,
         body -> Text,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
