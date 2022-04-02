@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
 
 
-#[derive(Identifiable, Deserialize, Serialize)]
+#[derive(Identifiable, Queryable, Deserialize, Serialize)]
 #[table_name = "comments"]
 pub struct CommentObject { 
     pub id: i32, 
@@ -14,7 +14,8 @@ pub struct CommentObject {
     pub updated_at: NaiveDateTime
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Insertable, Deserialize)]
+#[table_name = "comments"]
 pub struct CommentInput { 
     pub user_id: i32, 
     pub body: String
