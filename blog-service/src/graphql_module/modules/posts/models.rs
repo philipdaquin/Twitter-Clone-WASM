@@ -3,8 +3,7 @@ use diesel::{Queryable, AsChangeset, Insertable};
 use chrono::NaiveDateTime;
 use serde::{Serialize, Deserialize};
 use crate::schema::posts;
-
-#[derive(Serialize, Identifiable, Deserialize, AsChangeset, Debug, Queryable, Clone)]
+#[derive(Queryable, Debug, Serialize, Deserialize, PartialEq, Clone, Identifiable)]
 #[table_name = "posts"]
 pub struct PostObject { 
     pub id: i32,
