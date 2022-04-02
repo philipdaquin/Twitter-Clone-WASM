@@ -21,7 +21,6 @@ pub struct PostObject {
 #[derive(Insertable, Serialize, AsChangeset, Deserialize, Debug, Clone, PartialEq)]
 #[table_name = "posts"]
 pub struct FormPost { 
-    
     pub slug: Option<String>, 
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>, 
