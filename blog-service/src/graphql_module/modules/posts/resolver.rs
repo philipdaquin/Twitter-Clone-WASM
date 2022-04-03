@@ -5,7 +5,7 @@ use super::{provider, models::Post};
 use crate::graphql_module::context::get_conn_from_ctx;
 use super::models::FormPost;
 use chrono::{NaiveDateTime, Local};
-use super::models::{PostInput, Posts};
+use super::models::{PostInput, PostObject};
 use async_graphql::Error;
 
 
@@ -14,17 +14,17 @@ pub struct PostQuery;
 
 #[Object]
 impl PostQuery { 
-    #[graphql(name = "getPosts")]
-    async fn get_posts(&self, ctx: &Context<'_>) -> Vec<Posts> {
+    #[graphql(name = "getPost")]
+    async fn get_post(&self, ctx: &Context<'_>) -> Vec<PostObject> {
         let conn = get_conn_from_ctx(ctx);
         provider::get_all(&conn)
-            .expect("Cannot get Blog posts ")
+            .expect("Cannot get Blog PostObject ")
             .iter()
-            .map(Posts::from)
+            .map(PostObject::from)
             .collect()
     }
     #[graphql(name = "getPostbyId")]
-    async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Result<Option<Posts>, Error> { 
+    async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Result<Option<PostObject>, Error> { 
         let conn = get_conn_from_ctx(ctx);
         let id = post_id
             .to_string()
@@ -32,21 +32,21 @@ impl PostQuery {
             .expect("Could not Parse Post_ID");
         let post = provider::get_id(id, &conn)  
             .ok()
-            .map(|w| Posts::from(&w));
+            .map(|w| PostObject::from(&w));
         Ok(post)
 
     }
     #[graphql(name = "getPostsbyAuthor")]
-    async fn get_post_by_authorid(&self, ctx: &Context<'_>, user_id: ID) -> Result<Vec<Posts>, Error> { 
+    async fn get_post_by_authorid(&self, ctx: &Context<'_>, user_id: ID) -> Result<Vec<PostObject>, Error> { 
         let conn = get_conn_from_ctx(ctx);
         let author_id = user_id
             .to_string()
             .parse::<i32>()
             .expect("Could not Parse Post_ID");
         let post_by = provider::get_by_author(author_id, &conn)
-            .expect("Cannot get any User posts")
+            .expect("Cannot get any User Posts")
             .iter()
-            .map(|s| Posts::from(s))
+            .map(|s| PostObject::from(s))
             .collect();
         Ok(post_by)
     }
@@ -56,8 +56,8 @@ pub struct PostMutation;
 
 #[Object]
 impl PostMutation { 
-    #[graphql(name = "createPosts")]
-    async fn create_post(&self, ctx: &Context<'_>, form: PostInput) -> Result<Posts, Error> {
+    #[graphql(name = "createPost")]
+    async fn create_post(&self, ctx: &Context<'_>, form: PostInput) -> Result<PostObject, Error> {
         let conn = get_conn_from_ctx(ctx);
         
         let new_post = FormPost { 
@@ -71,8 +71,8 @@ impl PostMutation {
         };
         let post = provider::create_post(new_post, &conn)
             .ok()
-            .map(|e| Posts::from(&e))
-            .expect("Unable to convert Post to Posts");
+            .map(|e| PostObject::from(&e))
+            .expect("Unable to convert Post to PostsObject");
         Ok(post)
     }
     #[graphql(name = "updatePosts")]
@@ -81,7 +81,7 @@ impl PostMutation {
         ctx: &Context<'_>, 
         form: PostInput,
         post_id: ID
-    ) -> Result<Posts, Error> {
+    ) -> Result<PostObject, Error> {
         // let conn = get_conn_from_ctx(ctx);
         // let post_id = post_id
         //     .to_string()
@@ -89,7 +89,7 @@ impl PostMutation {
         //     .expect("Could not Parse POst Id to int");
         // let post = provider::update_post( form, &conn)
         //     .expect("")
-        //     .map(Posts::from);
+        //     .map(PostObject::from);
         // Ok(post)
         todo!()
     }
@@ -101,7 +101,7 @@ impl PostMutation {
 
 
 #[Object]
-impl Posts  { 
+impl PostObject  { 
     async fn id(&self) -> ID { 
         self.id.clone()
     }
@@ -121,9 +121,9 @@ impl Posts  {
         &self.featured_image
     }
 }
-impl From<&Post> for Posts { 
+impl From<&Post> for PostObject { 
     fn from(oop: &Post) -> Self {
-        Posts { 
+        PostObject { 
             id: oop.id.into(),
             slug: oop.slug.clone(),
             title: oop.title.clone(),

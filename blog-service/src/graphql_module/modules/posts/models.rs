@@ -37,7 +37,7 @@ pub struct PostInput {
     pub featured_image: String 
 } 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct Posts { 
+pub struct PostObject { 
     pub id: ID,
     pub slug: String, 
     pub title: String,
