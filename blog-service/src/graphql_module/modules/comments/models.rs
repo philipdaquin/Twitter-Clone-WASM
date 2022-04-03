@@ -8,7 +8,7 @@ use crate::graphql_module::modules::posts::models::Post;
     Serialize, Deserialize, Debug)]
 #[table_name = "comments"]
 #[belongs_to(Post)]
-pub struct CommentObject { 
+pub struct Comment { 
     pub id: i32, 
     pub user_id: i32, 
     pub post_id: i32,
