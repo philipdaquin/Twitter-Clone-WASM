@@ -3,11 +3,11 @@ use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
 use crate::schema::posts;
 use diesel::prelude::*;
-use crate::graphql_module::modules::posts::models::PostObject;
+use crate::graphql_module::modules::posts::models::Post;
 #[derive(Queryable, Identifiable, PartialEq, Clone, Associations, 
     Serialize, Deserialize, Debug)]
 #[table_name = "comments"]
-#[belongs_to(PostObject)]
+#[belongs_to(Post)]
 pub struct CommentObject { 
     pub id: i32, 
     pub user_id: i32, 

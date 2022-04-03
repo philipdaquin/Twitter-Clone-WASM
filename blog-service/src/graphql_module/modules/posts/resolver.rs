@@ -1,7 +1,7 @@
 use async_graphql::*;
 use crate::graphql_module::schema::{Mutation, Query};
 use serde::{Deserialize, Serialize};
-use super::{provider, models::PostObject};
+use super::{provider, models::Post};
 use crate::graphql_module::context::get_conn_from_ctx;
 use super::models::FormPost;
 use chrono::{NaiveDateTime, Local};
@@ -72,7 +72,7 @@ impl PostMutation {
         let post = provider::create_post(new_post, &conn)
             .ok()
             .map(|e| Posts::from(&e))
-            .expect("Unable to convert PostObject to Posts");
+            .expect("Unable to convert Post to Posts");
         Ok(post)
     }
     #[graphql(name = "updatePosts")]
@@ -121,8 +121,8 @@ impl Posts  {
         &self.featured_image
     }
 }
-impl From<&PostObject> for Posts { 
-    fn from(oop: &PostObject) -> Self {
+impl From<&Post> for Posts { 
+    fn from(oop: &Post) -> Self {
         Posts { 
             id: oop.id.into(),
             slug: oop.slug.clone(),

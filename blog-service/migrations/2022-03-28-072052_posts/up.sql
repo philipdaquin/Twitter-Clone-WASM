@@ -1,5 +1,5 @@
 -- Your SQL goes here
-CREATE TABLE IF NOT EXISTS posts (
+CREATE TABLE  posts (
     id SERIAL PRIMARY KEY,
     author_id SERIAL NOT NULL,
     slug VARCHAR NOT NULL UNIQUE,
