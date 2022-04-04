@@ -1,5 +1,5 @@
 use crate::schema::*;
-use async_graphql::{ID, InputObject};
+use async_graphql::{ID, InputObject, Object};
 use serde::{Deserialize, Serialize};
 use chrono::{NaiveDateTime, NaiveDate};
 use crate::schema::posts;
@@ -31,10 +31,11 @@ pub struct CommentInput {
 }
 
 //  Graphql Stuff
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CommentObject { 
     pub id: ID, 
     pub user_id: ID, 
+    pub post_id: ID, 
     pub body: String, 
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime
@@ -43,6 +44,7 @@ pub struct CommentObject {
 #[derive(InputObject)]
 pub struct NewComment { 
     pub user_id: ID,
+    pub post_id: ID,
     pub body: String,
 }
 
