@@ -29,3 +29,4 @@ argonautica = "0.2.0"
 lazy_static = "1.4.0"
 uuid = {version = "0.8.2", features = ["serde","v4"]}
 common = { path ="../common" } 
+auth-service = { path="../auth-service" }

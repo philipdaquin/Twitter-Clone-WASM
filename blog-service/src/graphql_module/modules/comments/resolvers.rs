@@ -47,45 +47,46 @@ pub struct CommentMutation;
 
 #[Object]
 impl CommentMutation { 
-    #[graphql(name = "createPost")]
-    async fn insert_comment(&self, ctx: &Context<'_>, user_id: ID, form: NewComment) -> Result<Option<CommentObject>, Error> {
-        let conn = get_conn_from_ctx(ctx);
+//     #[graphql(name = "createPost")]
+//     async fn insert_comment(&self, ctx: &Context<'_>, user_id: ID, form: NewComment) -> Result<Option<CommentObject>, Error> {
+//         let conn = get_conn_from_ctx(ctx);
         
-        let new_comment = CommentInput { 
-            post_id: form.post_id
-                .to_string()
-                .parse::<i32>()
-                .expect(""),
-            user_id: user_id
-                .to_string()
-                .parse::<i32>()
-                .expect(""),
-            body: form.body,
-            created_at: Local::now().naive_local(),
-            updated_at: None
-        };
-        let comment = providers::add_comment(new_comment, &conn)
-            .ok()
-            .map(|x| CommentObject::from(&x));
-        
-        Ok(comment)
-    }
+//         let new_comment = CommentInput { 
+//             post_id: form.post_id
+//                 .to_string()
+//                 .parse::<i32>()
+//                 .expect(""),
+//             user_id: user_id
+//                 .to_string()
+//                 .parse::<i32>()
+//                 .expect(""),
+//             body: form.body,
+//             created_at: Local::now().naive_local(),
+//             updated_at: None
+//         };
 
-    #[graphql(name = "getPost")]
-    async fn update_comment(&self, ctx: &Context<'_>) -> Result<CommentObject, Error> {
-        let conn = get_conn_from_ctx(ctx);
+//         let comment = providers::add_comment(new_comment, &conn)
+//             .ok()
+//             .map(|x| CommentObject::from(&x));
+//         Ok(comment)
+//     }
 
+//     #[graphql(name = "getPost")]
+//     async fn update_comment(&self, ctx: &Context<'_>) -> Result<Option<CommentObject>, Error> {
+//         let conn = get_conn_from_ctx(ctx);
+//         todo!()
 
-    }
+//     }
 
-    #[graphql(name = "getPost")]
-    async fn delete_comment(&self, ctx: &Context<'_>) -> Result<bool, Error> {
-        let conn = get_conn_from_ctx(ctx);
+//     #[graphql(name = "getPost")]
+//     async fn delete_comment(&self, ctx: &Context<'_>) -> Result<bool, Error> {
+//         let conn = get_conn_from_ctx(ctx);
+//         todo!()
 
+//     }
+// }
 
-    }
 }
-
 
 
 impl From<&Comment> for CommentObject { 
