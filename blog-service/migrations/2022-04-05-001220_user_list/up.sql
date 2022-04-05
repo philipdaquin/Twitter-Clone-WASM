@@ -1,5 +1,4 @@
--- Your SQL goes here
-CREATE TABLE users_blog ( 
+CREATE TABLE user_comment ( 
     id INTEGER PRIMARY KEY NOT NULL,
     username VARCHAR NOT NULL
 )

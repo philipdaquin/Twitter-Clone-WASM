@@ -1,0 +1,1 @@
+ALTER TABLE comments ADD FOREIGN KEY (user_id) REFERENCES user_comment (id) ON DELETE CASCADE;

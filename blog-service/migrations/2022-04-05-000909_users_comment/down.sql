@@ -1,2 +1,3 @@
 -- This file should undo anything in `up.sql`
-DROP TABLE users_blog
+
+DROP TABLE comments; 

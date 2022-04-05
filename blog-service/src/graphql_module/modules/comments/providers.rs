@@ -1,13 +1,12 @@
 use super::models::{Comment, CommentInput};
 use crate::schema::comments;
 use crate::schema::posts;
+use auth_service::graphql_module::modules::user_model::model::UserObject;
 use diesel::prelude::*;
 use diesel::dsl::any;
 use crate::schema::comments::dsl;
 use super::models::COMMENTOBJECT;
-use auth_service::schema::users;
-use auth_service::graphql_module::modules::user_model::model::UserObject;
-
+use crate::schema::user_comment;
 
 pub fn get_all_comments(conn: &PgConnection) -> QueryResult<Vec<Comment>> {
     comments::table
@@ -18,8 +17,8 @@ pub fn get_comments_by_post(post_id: i32, conn: &PgConnection) -> QueryResult<Ve
     comments::table
         .filter(comments::post_id.eq(post_id))
         .inner_join(posts::table)
-        .select((comments::all_columns, (users::id, users::username)))
-        .load::<(Comment, UserObject)>(conn)
+        .select((comments::all_columns, (user_comment::id, user_comment::username)))
+        .load::<(Comment, UserObject)>(conn)2
         .map_err(Into::into)
 
 }       

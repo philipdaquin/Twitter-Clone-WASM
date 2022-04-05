@@ -24,16 +24,17 @@ table! {
 }
 
 table! {
-    users_blog (id) {
+    user_comment (id) {
         id -> Int4,
         username -> Varchar,
     }
 }
 
 joinable!(comments -> posts (post_id));
+joinable!(comments -> user_comment (user_id));
 
 allow_tables_to_appear_in_same_query!(
     comments,
     posts,
-    users_blog,
+    user_comment,
 );
