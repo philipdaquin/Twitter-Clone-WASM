@@ -1,4 +1,0 @@
-CREATE TABLE user_comment ( 
-    id INTEGER PRIMARY KEY NOT NULL,
-    username VARCHAR NOT NULL
-)

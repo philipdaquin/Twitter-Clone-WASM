@@ -13,13 +13,8 @@ pub fn get_all_comments(conn: &PgConnection) -> QueryResult<Vec<Comment>> {
         .order(comments::id.desc())
         .load::<Comment>(conn)
 }
-pub fn get_comments_by_post(post_id: i32, conn: &PgConnection) -> QueryResult<Vec<(Comment, UserObject)>> { 
-    comments::table
-        .filter(comments::post_id.eq(post_id))
-        .inner_join(posts::table)
-        .select((comments::all_columns, (user_comment::id, user_comment::username)))
-        .load::<(Comment, UserObject)>(conn)2
-        .map_err(Into::into)
+pub fn get_comments_by_post(post_id: i32, conn: &PgConnection) -> QueryResult<Comment> { 
+    todo!()
 
 }       
 pub fn add_comment(user_id: i32, post_id: i32, body: &str, conn: &PgConnection) -> QueryResult<Comment> {

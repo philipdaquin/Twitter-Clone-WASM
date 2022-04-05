@@ -30,6 +30,13 @@ pub struct CommentInput {
     pub updated_at: Option<NaiveDateTime>
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct PostWithComment { 
+    pub id: i32, 
+    pub title: String, 
+    pub published: bool
+}
+
 //  Graphql Stuff
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CommentObject { 

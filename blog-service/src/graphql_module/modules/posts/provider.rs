@@ -3,6 +3,9 @@ use super::models::{FormPost, Post};
 use crate::schema::posts;
 use super::models::POSTCOLUMNS;
 use diesel::result::Error as DbError;
+
+
+
 pub fn get_all(conn: &PgConnection) -> QueryResult<Vec<Post>> { 
     use crate::schema::posts::dsl::*;
     posts.load(conn)
@@ -25,7 +28,12 @@ pub fn create_post(form: FormPost, conn: &PgConnection) -> QueryResult<Post> {
         .values(form)
         .returning(POSTCOLUMNS)
         .on_conflict_do_nothing()
-        .get_result::<Post>(conn)
+        .get_result::<Post>(conn)?;
+    posts::table    
+        .order(posts::id.desc())
+        .select(posts::all_columns)
+        .first(conn)
+        .map_err(Into::into)
 }
 pub fn delete_post(post_author: i32, post_id: i32, conn: &PgConnection) -> QueryResult<bool> { 
     use crate::schema::posts::dsl::*;
