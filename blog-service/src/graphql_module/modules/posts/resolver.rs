@@ -7,7 +7,7 @@ use super::models::FormPost;
 use chrono::{NaiveDateTime, Local};
 use super::models::{PostInput, PostObject};
 use async_graphql::Error;
-
+use rdkafka::{producer::FutureProducer, Message};
 
 #[derive(Default)]
 pub struct PostQuery;
@@ -94,11 +94,13 @@ impl PostMutation {
         todo!()
     }
     #[graphql(name = "deletePosts")]
-    async fn delete_post(&self, ctx: &Context<'_>) -> Result<bool, Error> { 
+    async fn delete_post(&self, ctx: &Context<'_>, post_author: i32, post_id: i32 ) -> Result<bool, Error> { 
+        let conn = get_conn_from_ctx(ctx);
+        provider::delete_post(post_author, post_id, &conn)
+            .expect("Couldn't delete Post");
         Ok(true)
     }
 }
-
 
 #[Object]
 impl PostObject  { 
@@ -121,6 +123,7 @@ impl PostObject  {
         &self.featured_image
     }
 }
+
 impl From<&Post> for PostObject { 
     fn from(oop: &Post) -> Self {
         PostObject { 
@@ -131,5 +134,19 @@ impl From<&Post> for PostObject {
             body: oop.body.clone(),
             featured_image: oop.featured_image.clone()
         }
+    }
+}
+
+//  Get the latest Posts
+pub struct Subscription;
+
+#[Subscription]
+impl Subscription { 
+    async fn latest_post<'ctx> { 
+        &self,
+        ctx: &'ctx Cntext<'_>,
+    } -> impl Stream<Item = PostObject> + 'ctx { 
+        
+
     }
 }
