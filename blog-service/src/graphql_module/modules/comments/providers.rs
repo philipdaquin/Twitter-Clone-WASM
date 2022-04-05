@@ -4,10 +4,11 @@ use crate::schema::posts;
 use diesel::prelude::*;
 use diesel::dsl::any;
 use crate::schema::comments::dsl;
-use super::models::COMMENTOBJECT;
-use crate::schema::user_comment;
-use super::super::users::UserObject;
+use super::models::{COMMENTOBJECT, CommentUser, PostUser};
 use crate::schema::users;
+use super::super::users::User;
+
+
 
 
 pub fn get_all_comments(conn: &PgConnection) -> QueryResult<Vec<Comment>> {
@@ -15,12 +16,12 @@ pub fn get_all_comments(conn: &PgConnection) -> QueryResult<Vec<Comment>> {
         .order(comments::id.desc())
         .load::<Comment>(conn)
 }
-pub fn get_comments_by_post(post_id: i32, conn: &PgConnection) -> QueryResult<Vec<(Comment, UserObject)>> { 
+pub fn get_comments_by_post(post_id: i32, conn: &PgConnection) -> QueryResult<Vec<CommentUser>> { 
     comments::table 
         .filter(comments::post_id.eq(post_id))
         .inner_join(users::table)
-        .select((comments::all_columns, (users::id, users::email)))
-        .load::<(Comment, UserObject)>(conn)
+        .select((comments::all_columns, users::all_columns))
+        .load::<(Comment, User)>(conn)
         .map_err(Into::into)
 }       
 pub fn add_comment(user_id: i32, post_id: i32, body: &str, conn: &PgConnection) -> QueryResult<Comment> {

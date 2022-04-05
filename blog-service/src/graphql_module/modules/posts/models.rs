@@ -3,11 +3,13 @@ use diesel::{Queryable, AsChangeset, Insertable};
 use chrono::NaiveDateTime;
 use serde::{Serialize, Deserialize};
 use crate::schema::posts;
-use super::super::users::UserObject;
+use super::super::users::User;
 
-#[derive(Queryable, Debug, Serialize, Deserialize, PartialEq, Clone, Identifiable)]
+
+
+#[derive(Queryable, Associations, Debug, Serialize, Deserialize, PartialEq, Clone, Identifiable)]
 #[table_name = "posts"]
-
+#[belongs_to(User)]
 pub struct Post { 
     pub id: i32,
     pub user_id: i32,

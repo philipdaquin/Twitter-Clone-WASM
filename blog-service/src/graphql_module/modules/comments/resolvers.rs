@@ -20,16 +20,7 @@ impl CommentQuery {
             .iter()
             .map(CommentObject::from)
             .collect::<Vec<_>>();
-
         Ok(comments)
-    }
-    
-    #[graphql(name = "getCommentByPost")]
-    pub async fn get_comment_by_post(&self, ctx: &Context<'_>, comment_id: ID) -> Result<Vec<CommentObject>, Error> {
-        let conn = get_conn_from_ctx(ctx);
-       
-
-        Ok(comment)
     }
 }
 
@@ -41,7 +32,6 @@ impl CommentMutation {
     #[graphql(name = "createPost")]
     async fn insert_comment(&self, ctx: &Context<'_>, user_id: ID, form: NewComment) -> Result<Option<CommentObject>, Error> {
         let conn = get_conn_from_ctx(ctx);
-        
         let new_comment = CommentInput { 
             post_id: form.post_id
                 .to_string()
@@ -55,25 +45,20 @@ impl CommentMutation {
             created_at: Local::now().naive_local(),
             updated_at: None
         };
-
         let comment = providers::add_comment(new_comment, &conn)
             .ok()
             .map(|x| CommentObject::from(&x));
         Ok(comment)
     }
-
     #[graphql(name = "getPost")]
     async fn update_comment(&self, ctx: &Context<'_>) -> Result<Option<CommentObject>, Error> {
         let conn = get_conn_from_ctx(ctx);
         todo!()
-
     }
-
     #[graphql(name = "getPost")]
     async fn delete_comment(&self, ctx: &Context<'_>) -> Result<bool, Error> {
         let conn = get_conn_from_ctx(ctx);
         todo!()
-
     }
 }
 

@@ -6,11 +6,15 @@ use crate::schema::posts;
 use diesel::prelude::*;
 use crate::graphql_module::modules::posts::models::Post;
 use crate::schema::comments;
+use super::super::users::User;
+pub type PostUser = (Post, User);
+pub type CommentUser = (Comment, User);
 
 #[derive(Queryable, Identifiable, PartialEq, Clone, Associations, 
     Serialize, Deserialize, Debug)]
 #[table_name = "comments"]
-#[belongs_to(Post, foreign_key = "post_id")]
+#[belongs_to(Post)]
+#[belongs_to(User)]
 pub struct Comment { 
     pub id: i32, 
     pub user_id: i32, 

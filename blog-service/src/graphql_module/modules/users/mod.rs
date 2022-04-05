@@ -3,10 +3,10 @@ use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
 
-#[derive(Identifiable, Debug, Clone, PartialEq, 
-    Serialize, Deserialize, Queryable)]
+#[derive(Identifiable, Debug, Clone, PartialEq, Queryable,
+    Serialize, Deserialize)]
 #[table_name = "users"]
-pub struct UserObject { 
+pub struct User { 
     pub id: i32, 
     pub created_at: NaiveDateTime,
     pub first_name: String, 
@@ -14,6 +14,4 @@ pub struct UserObject {
     pub username: String, 
     pub location: Option<String>,
     pub email: String, 
-    pub hash: String,
-    pub role: String
 }
