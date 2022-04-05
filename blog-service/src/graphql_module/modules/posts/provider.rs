@@ -39,7 +39,7 @@ pub fn delete_post(post_author: i32, post_id: i32, conn: &PgConnection) -> Query
     use crate::schema::posts::dsl::*;
 
     diesel::delete(posts
-        .filter(author_id.eq(post_author))
+        .filter(user_id.eq(post_author))
         .find(post_id)
     )
     .execute(conn)?;

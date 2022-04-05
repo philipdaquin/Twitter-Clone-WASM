@@ -3,11 +3,14 @@ use diesel::{Queryable, AsChangeset, Insertable};
 use chrono::NaiveDateTime;
 use serde::{Serialize, Deserialize};
 use crate::schema::posts;
+use super::super::users::UserObject;
+
 #[derive(Queryable, Debug, Serialize, Deserialize, PartialEq, Clone, Identifiable)]
 #[table_name = "posts"]
+
 pub struct Post { 
     pub id: i32,
-    pub author_id: i32,
+    pub user_id: i32,
     pub slug: String, 
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime, 
@@ -49,7 +52,7 @@ pub struct PostObject {
 
 pub const POSTCOLUMNS: PostColumn = (
     posts::id,
-    posts::author_id,
+    posts::user_id,
     posts::slug,
     posts::created_at,
     posts::updated_at,
@@ -61,7 +64,7 @@ pub const POSTCOLUMNS: PostColumn = (
 
 pub type PostColumn = (
     posts::id,
-    posts::author_id,
+    posts::user_id,
     posts::slug,
     posts::created_at,
     posts::updated_at,

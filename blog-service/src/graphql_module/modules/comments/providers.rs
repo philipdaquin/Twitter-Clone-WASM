@@ -1,21 +1,27 @@
 use super::models::{Comment, CommentInput};
 use crate::schema::comments;
 use crate::schema::posts;
-use auth_service::graphql_module::modules::user_model::model::UserObject;
 use diesel::prelude::*;
 use diesel::dsl::any;
 use crate::schema::comments::dsl;
 use super::models::COMMENTOBJECT;
 use crate::schema::user_comment;
+use super::super::users::UserObject;
+use crate::schema::users;
+
 
 pub fn get_all_comments(conn: &PgConnection) -> QueryResult<Vec<Comment>> {
     comments::table
         .order(comments::id.desc())
         .load::<Comment>(conn)
 }
-pub fn get_comments_by_post(post_id: i32, conn: &PgConnection) -> QueryResult<Comment> { 
-    todo!()
-
+pub fn get_comments_by_post(post_id: i32, conn: &PgConnection) -> QueryResult<Vec<(Comment, UserObject)>> { 
+    comments::table 
+        .filter(comments::post_id.eq(post_id))
+        .inner_join(users::table)
+        .select((comments::all_columns, (users::id, users::email)))
+        .load::<(Comment, UserObject)>(conn)
+        .map_err(Into::into)
 }       
 pub fn add_comment(user_id: i32, post_id: i32, body: &str, conn: &PgConnection) -> QueryResult<Comment> {
     diesel::insert_into(comments::table)

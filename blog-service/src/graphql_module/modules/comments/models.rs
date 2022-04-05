@@ -36,7 +36,6 @@ pub struct PostWithComment {
     pub title: String, 
     pub published: bool
 }
-
 //  Graphql Stuff
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CommentObject { 
