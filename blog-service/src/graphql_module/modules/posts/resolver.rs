@@ -1,3 +1,5 @@
+use std::sync::Mutex;
+
 use async_graphql::*;
 use crate::graphql_module::schema::{Mutation, Query};
 use serde::{Deserialize, Serialize};
@@ -7,8 +9,6 @@ use super::models::FormPost;
 use chrono::{NaiveDateTime, Local};
 use super::models::{PostInput, PostObject};
 use async_graphql::Error;
-use rdkafka::{producer::FutureProducer, Message};
-use futures::{Stream, StreamExt};
 
 #[derive(Default)]
 pub struct PostQuery;
@@ -124,7 +124,6 @@ impl PostObject  {
         &self.featured_image
     }
 }
-
 impl From<&Post> for PostObject { 
     fn from(oop: &Post) -> Self {
         PostObject { 
@@ -139,6 +138,10 @@ impl From<&Post> for PostObject {
 }
 
 //  Get the latest Posts
+//  Subscriptions
+use rdkafka::{producer::FutureProducer, Message};
+use futures::{Stream, StreamExt};
+use crate::kafka::{create_consumer, create_producer, get_kafka_consumer_id};
 pub struct Subscription;
 
 #[Subscription]
@@ -147,7 +150,24 @@ impl Subscription {
         &self,
         ctx: &'ctx Context<'_>,
     ) -> impl Stream<Item = PostObject> + 'ctx { 
-        
-        todo!()
+        let kafka_consumer = ctx
+            .data::<Mutex<i32>>().expect("");
+        let consumer_id = get_kafka_consumer_id(kafka_consumer);
+        let consumer = create_consumer(consumer_id);
+
+        // stream! macros returns an anonymous type implementing the Stream trait. 
+        async_stream::stream! {
+            let mut stream = consumer.stream();
+            while let Some(val) = stream.next().await { 
+                yield match val { 
+                    Ok(msg) => { 
+                        let payload = msg.payload().expect("Kafka msg should contain payload");
+                        let msg = String::from_utf8_lossy(payload).to_string();
+                        serde_json::from_str(&msg).expect("Cannot Deserialize a Message")
+                    }
+                    Err(e) => panic!("Error while Kafka message processing: {}", e)
+                };
+            }
+        }
     }
 }
