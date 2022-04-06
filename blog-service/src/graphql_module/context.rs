@@ -6,7 +6,7 @@ use actix_web::{get, middleware::Logger, Error,  route, web::{self}, App, HttpSe
 use actix_web_lab::respond::Html;
 use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
-    EmptyMutation, EmptySubscription, Schema, Context,
+    EmptyMutation, EmptySubscription, Schema, Context, extensions::ApolloTracing
 };
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse, GraphQLSubscription};
 use crate::db::{DbPool, DbPooledConnection};
@@ -75,6 +75,7 @@ pub fn create_schema(pool: DbPool) -> AppSchema {
     .data(arc_pool)
     .data(create_producer())
     .data(kafka_consumer)
+    .extension(ApolloTracing)
     .finish()
 }
 pub fn run_migrations(pool: &DbPool) { 

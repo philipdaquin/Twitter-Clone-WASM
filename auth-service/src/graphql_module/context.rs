@@ -4,7 +4,8 @@ use actix_web::{get, middleware::Logger, route, web, App, HttpServer, Responder,
 use actix_web_lab::respond::Html;
 use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
-    EmptyMutation, EmptySubscription, Schema, Context,
+    EmptyMutation, EmptySubscription, Schema, Context, 
+    extensions::ApolloTracing
 };
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse, GraphQLSubscription};
 use crate::db::{DbPool, DbPooledConnection};
@@ -69,6 +70,7 @@ pub fn create_schema(pool: DbPool) -> AppSchema {
     .enable_federation()
     // Add a global data that can be accessed in the Schema
     .data(pool)
+    .extension(ApolloTracing)
     .finish()
 }
 pub fn run_migrations(pool: &DbPool) { 
