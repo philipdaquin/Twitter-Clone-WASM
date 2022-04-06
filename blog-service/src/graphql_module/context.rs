@@ -1,4 +1,6 @@
 
+use std::sync::{Mutex, Arc};
+use super::modules::posts::resolver::Subscription;
 use actix_cors::Cors;
 use actix_web::{get, middleware::Logger, Error,  route, web::{self}, App, HttpServer, Responder, HttpRequest, HttpResponse, guard};
 use actix_web_lab::respond::Html;
@@ -12,6 +14,9 @@ use super::schema::{Mutation, Query, AppSchema, AppSchemaBuilder};
 use diesel::{result::Error as DbError, QueryDsl};
 use diesel_migrations::{MigrationError, embed_migrations};
 use common::token::{get_role};
+use crate::kafka::create_producer;
+
+
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 
     cfg
@@ -25,7 +30,6 @@ pub fn configure_service(cfg: &mut web::ServiceConfig) {
         )
     );
 }
-
 /// GraphQL endpoint
 #[route("/graphql", method = "GET", method = "POST")]
 pub async fn graphql(schema: web::Data<AppSchema>, req: GraphQLRequest, http: HttpRequest) -> GraphQLResponse {
@@ -50,29 +54,38 @@ pub async fn index_ws(
     req: HttpRequest, 
     payload: web::Payload
 ) -> Result<HttpResponse, Error> { 
+    
     GraphQLSubscription::new(Schema::clone(&*schema))
-    .start(&req, payload)
+        .start(&req, payload)
 }
 
 embed_migrations!();
 
 pub fn create_schema(pool: DbPool) -> AppSchema { 
+    let arc_pool = Arc::new(pool);
+    let kafka_consumer = Mutex::new(0);
+    
     Schema::build(
         Query::default(), 
         Mutation::default(), 
-        EmptySubscription
+        Subscription
     )
     .enable_federation()
     // Add a global data that can be accessed in the Schema
-    .data(pool)
+    .data(arc_pool)
+    .data(create_producer())
+    .data(kafka_consumer)
     .finish()
 }
 pub fn run_migrations(pool: &DbPool) { 
-    let conn = pool.get().expect("Database Connection Pool - Migrations error!");
-    embedded_migrations::run(&conn).expect("Failed to run database migrations");
+    let conn = pool
+        .get()
+        .expect("Database Connection Pool - Migrations error!");
+    embedded_migrations::run(&conn)
+        .expect("Failed to run database migrations");
 }
 pub fn get_conn_from_ctx(ctx: &Context<'_>) -> DbPooledConnection { 
-    ctx.data::<DbPool>()
+    ctx.data::<Arc<DbPool>>()
         .expect("Failed to get Db Pool")
         .get()
         .expect("Failed to Connect to Database")

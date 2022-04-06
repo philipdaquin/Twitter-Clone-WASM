@@ -8,6 +8,7 @@ use chrono::{NaiveDateTime, Local};
 use super::models::{PostInput, PostObject};
 use async_graphql::Error;
 use rdkafka::{producer::FutureProducer, Message};
+use futures::{Stream, StreamExt};
 
 #[derive(Default)]
 pub struct PostQuery;
@@ -142,11 +143,11 @@ pub struct Subscription;
 
 #[Subscription]
 impl Subscription { 
-    async fn latest_post<'ctx> { 
+    async fn latest_post<'ctx> (
         &self,
-        ctx: &'ctx Cntext<'_>,
-    } -> impl Stream<Item = PostObject> + 'ctx { 
+        ctx: &'ctx Context<'_>,
+    ) -> impl Stream<Item = PostObject> + 'ctx { 
         
-
+        todo!()
     }
 }

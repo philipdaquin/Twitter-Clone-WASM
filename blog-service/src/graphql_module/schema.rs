@@ -1,7 +1,7 @@
-use async_graphql::{EmptySubscription, MergedObject, Schema, SchemaBuilder};
+use async_graphql::{Subscription, MergedObject, Schema, SchemaBuilder};
 use super::modules::{
     // comments::resolvers::{CommentQuery, CommentMutation},
-    posts::resolver::{PostMutation, PostQuery}
+    posts::resolver::{PostMutation, PostQuery, Subscription}
 };
 
 #[derive(MergedObject, Default)]
@@ -9,5 +9,5 @@ pub struct Query(PostQuery);
 
 #[derive(MergedObject, Default)]
 pub struct Mutation(PostMutation);
-pub type AppSchema = Schema<Query, Mutation, EmptySubscription>;
-pub type AppSchemaBuilder = SchemaBuilder<Query, Mutation, EmptySubscription>;
+pub type AppSchema = Schema<Query, Mutation, Subscription>;
+pub type AppSchemaBuilder = SchemaBuilder<Query, Mutation, Subscription>;
