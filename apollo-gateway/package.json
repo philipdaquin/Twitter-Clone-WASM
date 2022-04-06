@@ -1,0 +1,23 @@
+{
+  "name": "medium-twitter-clone",
+  "version": "1.0.0",
+  "description": "## TechStack  - WebAssembly - Rust Programming Language - Yew  - Apollo Server  - Async-GraphQL - Apache Kafka - Actix-Web - Diesel  - Postgresql",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/philipdaquin/Medium-Twitter-Clone.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/philipdaquin/Medium-Twitter-Clone/issues"
+  },
+  "homepage": "https://github.com/philipdaquin/Medium-Twitter-Clone#readme",
+  "dependencies": {
+    "@apollo/gateway": "^0.50.0",
+    "apollo-server": "^3.6.7"
+  }
+}
