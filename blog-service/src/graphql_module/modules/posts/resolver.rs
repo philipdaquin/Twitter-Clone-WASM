@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 
 use async_graphql::*;
-use crate::graphql_module::schema::{Mutation, Query};
+use crate::{graphql_module::schema::{Mutation, Query}, kafka};
 use serde::{Deserialize, Serialize};
 use super::{provider, models::Post};
 use crate::graphql_module::context::get_conn_from_ctx;
@@ -70,11 +70,18 @@ impl PostMutation {
             body: Some(form.body),
             featured_image: Some(form.featured_image)
         };
-        let post = provider::create_post(new_post, &conn)
-            .ok()
-            .map(|e| PostObject::from(&e))
-            .expect("Unable to convert Post to PostsObject");
-        Ok(post)
+        let post = provider::create_post(new_post, &conn)?;
+            // .ok()
+            // .map(|e| PostObject::from(&e))
+            // .expect("Unable to convert Post to PostsObject");
+        
+        //  In the mutation, post creation a messgage is sent to the kafka.
+        let producer = ctx.data::<FutureProducer>().expect("Cannot get Kafka Producer");
+        let message = serde_json::to_string(&PostObject::from(&post))
+            .expect("Cannot serialize a post");
+        kafka::send_message(producer, message).await;
+
+        Ok(PostObject::from(&post))
     }
     #[graphql(name = "updatePosts")]
     async fn update_post(
@@ -141,9 +148,11 @@ impl From<&Post> for PostObject {
 //  Subscriptions
 use rdkafka::{producer::FutureProducer, Message};
 use futures::{Stream, StreamExt};
-use crate::kafka::{create_consumer, create_producer, get_kafka_consumer_id};
+use crate::kafka::{create_consumer, create_producer, get_kafka_consumer_id, send_message};
 pub struct Subscription;
 
+
+//  The API client can be notified of the event by a subscription that listens to Kafka consumer
 #[Subscription]
 impl Subscription { 
     async fn latest_post<'ctx> (
@@ -151,10 +160,9 @@ impl Subscription {
         ctx: &'ctx Context<'_>,
     ) -> impl Stream<Item = PostObject> + 'ctx { 
         let kafka_consumer = ctx
-            .data::<Mutex<i32>>().expect("");
+            .data::<Mutex<i32>>().expect("Cnnot get the Kafka Consumer counter");
         let consumer_id = get_kafka_consumer_id(kafka_consumer);
         let consumer = create_consumer(consumer_id);
-
         // stream! macros returns an anonymous type implementing the Stream trait. 
         async_stream::stream! {
             let mut stream = consumer.stream();
