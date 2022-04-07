@@ -1,10 +1,11 @@
+# base image
 FROM rust:1.59.0  
+RUN apt update && apt install -y libpq-dev
+RUN cargo install diesel_cli -- diesel_cli --no-default-features --features postgres
+WORKDIR /blog-service
+COPY . .
 
-WORKDIR 
+# RUN Diesel Setup 
+RUN cargo install --path 
 
-ENV CARGO_TERM_COLOR always
-
-COPY 
-
-
-RUN 
+CMD cargo run 
