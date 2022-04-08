@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  # Blog Service 
+  # Blog Service -------------------------------------------
   blog-service:
     image: 
     container_name: blog-service
@@ -10,10 +10,10 @@ services:
     environment: 
       DATABASE_URL=postgres://postgres:$BLOG_PASSWORD@localhost/blogservice
       PORT=8080
-      JWT_SECRET_KEY=password
-      PASSWORD_SECRET_KEY=password
+      JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      PASSWORD_SECRET_KEY=${PASSWORD_SECRET_KEY}
       KAFKA_BROKER=localhost:3333
-      KAFKA_TOPIC=test
+      KAFKA_TOPIC=${KAFKA_TOPIC}
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/"]
       interval: 1m30s
@@ -24,12 +24,12 @@ services:
       - 8080:8080   
   blog-db:
     image: postgres:13.2-alpine
-    container: blogservice
+    container: blog-db 
     restart: always
     environment:
-      POSTGRES_USER=postgres
-      POSTGRES_DB_HOST=localhost
-      POSTGRES_DB=blogservice
+      POSTGRES_USER=${POSTGRES_USER}
+      POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
+      POSTGRES_DB=${POSTGRES_DB}
       POSTGRES_PASSWORD=$BLOG_PASSWORD
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -38,26 +38,54 @@ services:
       retries: 5
       start_period: 30s
 
-  # authentication service 
+  # authentication service -----------------------------------
   auth-service: 
     image: 
     container_name: auth-service
     restart: always
     depends_on: 
       - user_db 
+    environment:
+      DATABASE_URL=postgres://postgres:$AUTH_PASSWORD@localhost/authservice
+      JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      PASSWORD_SECRET_KEY=${PASSWORD_SECRET_KEY}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    ports:
+      - 8081: 8081
   user_db: 
     image: 
     container_name: user_db 
     restart: always
     environment:
-      
+      POSTGRES_USER=${POSTGRES_USER}
+      POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
+      POSTGRES_DB=${POSTGRES_DB}
+      POSTGRES_PASSWORD=$AUTH_PASSWORD
     healthcheck:
-      test: ["executable", "arg"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 1m30s
       timeout: 30s
       retries: 5
       start_period: 30s
 
+  # Apollo Server -------------------------------------------
+  apollo-gateway:
+    image: 
+    container_name: 
+    restart: always
+    depends_on:
+      - auth-service 
+      - blog-service 
+    environment:
+      NODE_ENV: docker 
+    ports:
+      - 
+  # Kafka -------------------------------------------
   kafka: 
     image:
     container_name: kafka 
@@ -68,4 +96,15 @@ services:
 
     ports: 
       -  
-    
+  zookeeper: 
+    image: 
+    container_name: zookeeper
+    restart: always 
+    healthcheck:
+      test: [ "CMD", "nc", "-vz", "localhost", "2181" ]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    ports:
+      - 2181: 2181
