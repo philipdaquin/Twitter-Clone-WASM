@@ -1,8 +1,10 @@
 # Build an image with Rust
 FROM rust:1.59.0  
+#Maintainer
+LABEL philip_daquinv  <philip@philipdaquin.com>
 # Set the environment Variables 
 ENV CARGO_TERM_COLOR always
-# Update OS 
+# Update UBUNTUE 
 RUN apt update && apt install -y libpq-dev
 # Install diesel_cli and post support 
 RUN cargo install diesel_cli -- diesel_cli --no-default-features --features postgres
@@ -22,10 +24,8 @@ RUN cargo install --path . --locked
 COPY /blog-service ./
 RUN cargo install --path . --locked
 
-
 FROM ubuntu:20.04
 RUN apt update && apt install -y libpq-dev
-
 # The Default Command to execute when runnning the container
 CMD ["blog-service"]
 # Expose the container port on the specific networks ports at runtime
