@@ -1,3 +1,71 @@
 version: "3.9"
 services:
-  
+  # Blog Service 
+  blog-service:
+    image: 
+    container_name: blog-service
+    restart: always
+    depends_on:
+      - blog-db
+    environment: 
+      DATABASE_URL=postgres://postgres:$BLOG_PASSWORD@localhost/blogservice
+      PORT=8080
+      JWT_SECRET_KEY=password
+      PASSWORD_SECRET_KEY=password
+      KAFKA_BROKER=localhost:3333
+      KAFKA_TOPIC=test
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    ports: 
+      - 8080:8080   
+  blog-db:
+    image: postgres:13.2-alpine
+    container: blogservice
+    restart: always
+    environment:
+      POSTGRES_USER=postgres
+      POSTGRES_DB_HOST=localhost
+      POSTGRES_DB=blogservice
+      POSTGRES_PASSWORD=$BLOG_PASSWORD
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1m
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # authentication service 
+  auth-service: 
+    image: 
+    container_name: auth-service
+    restart: always
+    depends_on: 
+      - user_db 
+  user_db: 
+    image: 
+    container_name: user_db 
+    restart: always
+    environment:
+      
+    healthcheck:
+      test: ["executable", "arg"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+  kafka: 
+    image:
+    container_name: kafka 
+    restart: always
+    depends_on: 
+      - zookeeper
+    environment: 
+
+    ports: 
+      -  
+    

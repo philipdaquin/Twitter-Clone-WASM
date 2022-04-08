@@ -1,5 +1,5 @@
 # Build an image with Rust
-FROM rust:1.59.0  
+FROM rust:latest
 #Maintainer
 LABEL philip_daquinv  <philip@philipdaquin.com>
 # Set the environment Variables 
