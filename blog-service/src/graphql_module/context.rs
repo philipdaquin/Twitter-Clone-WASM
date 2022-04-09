@@ -16,8 +16,6 @@ use diesel_migrations::{MigrationError, embed_migrations};
 use common::token::{get_role};
 use crate::kafka::create_producer;
 
-
-
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 
     cfg
     .service(graphql)

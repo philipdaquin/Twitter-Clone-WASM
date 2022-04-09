@@ -5,17 +5,20 @@ LABEL philip_daquinv  <philip@philipdaquin.com>
 # Set the environment Variables 
 ENV CARGO_TERM_COLOR always
 # Update UBUNTUE 
-RUN apt update && apt install -y libpq-dev
+RUN apt update && \ 
+    apt-get -y upgrade && \
+    apt install -y libpq-dev
 # Install diesel_cli and post support 
 RUN cargo install diesel_cli -- diesel_cli --no-default-features --features postgres
-# Create an empty project for caching /auth-service dependencies 
-COPY /common/ ./blog-service/common/
 RUN USER=root cargo new --bin /blog-service/docker-build
 # Set the working directory to /auth-service/
 WORKDIR /blog-service/docker-build
+# Create an empty project for caching /auth-service dependencies 
+COPY /common/ ./blog-service/common/
 # Copy Cargo Toml, Cargo Lock and insert  into ./
 COPY /Cargo.lock ./
 COPY /blog-service/Cargo.toml ./
+COPY migrations /blog-service/docker-build/
 # Cache dependencies 
 RUN cargo install --path . --locked
 

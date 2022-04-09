@@ -19,7 +19,7 @@ pub struct AuthUser;
 
 #[Object]
 impl AuthUser  { 
-    #[graphql(name = "getAllUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
+    // #[graphql(name = "getAllUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
     pub async fn get_all(
         &self, 
         ctx: &Context<'_>
@@ -34,7 +34,7 @@ impl AuthUser  {
         Ok(users)
     }
     
-    #[graphql(name = "getAllbyEmail", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
+    // #[graphql(name = "getAllbyEmail", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
     pub async fn get_users_by_email(
         &self, 
         ctx: &Context<'_>, 
@@ -85,7 +85,7 @@ pub struct UserMutate;
 
 #[Object]
 impl UserMutate { 
-    #[graphql(name = "registerUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
+    // #[graphql(name = "registerUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
     pub async fn register_user(
         &self, 
         ctx: &Context<'_>, 

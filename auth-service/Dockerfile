@@ -3,9 +3,9 @@ FROM rust:1.59.0
 # Set the environment Variables 
 ENV CARGO_TERM_COLOR always
 # Update OS 
-RUN apt update && apt install -y libpq-dev
-# Install diesel_cli and post support 
-RUN cargo install diesel_cli -- diesel_cli --no-default-features --features postgres
+RUN apt-get update && \
+    apt-get -y upgrade && \
+    apt-get -y install libpq-dev
 # Create an empty project for caching /auth-service dependencies 
 COPY /common/ ./auth-service/common/
 RUN USER=root cargo new --bin /auth-service/docker-build
