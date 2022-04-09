@@ -46,9 +46,9 @@ services:
     depends_on: 
       - user_db 
     environment:
-      DATABASE_URL=postgres://postgres:$AUTH_PASSWORD@localhost/authservice
-      JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      PASSWORD_SECRET_KEY=${PASSWORD_SECRET_KEY}
+      DATABASE_URL: postgres://$POSTGRES_USER:$AUTH_PASSWORD@localhost/authservice
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      PASSWORD_SECRET_KEY: ${PASSWORD_SECRET_KEY}
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8081/"]
       interval: 1m30s
@@ -62,18 +62,16 @@ services:
     container_name: user_db 
     restart: always
     environment:
-      POSTGRES_USER=${POSTGRES_USER}
-      POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
-      POSTGRES_DB=${POSTGRES_DB}
-      POSTGRES_PASSWORD=$AUTH_PASSWORD
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_DB_HOST: ${POSTGRES_DB_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: $AUTH_PASSWORD
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 1m30s
       timeout: 30s
       retries: 5
       start_period: 30s
-
-
 
 
   # Apollo Server -------------------------------------------
