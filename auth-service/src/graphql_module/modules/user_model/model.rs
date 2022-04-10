@@ -54,10 +54,15 @@ impl From<&UserObject> for User {
 }
 ///  User Mutation Classes types
 #[derive(InputObject, Deserialize, Serialize, Clone)]
+#[graphql(input_name = "userRegisterInput")]
 pub struct UserInput { 
+    /// Hello
     pub username: String,
-    pub password: String, 
+    /// Hello
+    pub password: String,
+    /// Hello 
     pub first_name: String, 
+    ///  asdasdasd`
     pub last_name: String, 
     pub location: String,
     pub email: String, 
@@ -65,15 +70,11 @@ pub struct UserInput {
 }
 
 #[derive(InputObject, Deserialize, Serialize, Clone)]
+#[graphql(input_name = "signInInput")]
 pub struct SignInInput { 
     pub username: String, 
     pub password: String 
 }
-
-
-
-
-
 
 
 

@@ -35,6 +35,7 @@ impl AuthUser  {
     }
     
     // #[graphql(name = "getAllbyEmail", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
+    /// Hello This isis a dajksjdaklsdjalskdjaslk;djaslk;d
     pub async fn get_users_by_email(
         &self, 
         ctx: &Context<'_>, 
@@ -48,7 +49,12 @@ impl AuthUser  {
         Ok(user)
     }
     
-    #[graphql(name = "getAllbyId", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
+    #[graphql(
+        name = "getAllbyId", 
+        // guard = "RoleGuard::new(AuthRole::Admin)", 
+        // visible = "is_admin"
+    )]
+    /// This is the test of a description 
     pub async fn get_users_by_id(
         &self, 
         ctx: &Context<'_>, 
@@ -86,6 +92,8 @@ pub struct UserMutate;
 #[Object]
 impl UserMutate { 
     // #[graphql(name = "registerUsers", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
+    #[graphql(name = "registerUser")]
+    /// This will register the users in our database
     pub async fn register_user(
         &self, 
         ctx: &Context<'_>, 
@@ -106,6 +114,8 @@ impl UserMutate {
         let user_created = provider::create_user(new_user, conn).expect("Cannot create user right now");
         Ok(User::from(&user_created))
     }
+    #[graphql(name = "signInUser")]
+    /// The user should be able to 
     pub async fn sign_in(
         &self, 
         ctx: &Context<'_>, 
@@ -129,3 +139,4 @@ impl UserMutate {
         todo!()
     }
 }
+

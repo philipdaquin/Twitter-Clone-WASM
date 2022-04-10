@@ -15,12 +15,13 @@ pub async fn new_server(port: u32) -> std::io::Result<()> {
     let db_pool = establish_connection(DatabaseKind::Example);
     run_migrations(&db_pool);
     let schema = web::Data::new(create_schema(db_pool));
-
-    log::info!("starting HTTP server on port {}", port);
-    log::info!("GraphiQL playground: http://localhost:{}/graphiql", port);
+    
+    
     log::info!("{}", &schema.sdl());
-
-
+    log::info!("🚀 Starting HTTP server on port {} ", port);
+    log::info!("📭 GraphiQL playground: http://localhost:{}/graphiql", port);
+    log::info!("📢 Query at https://studio.apollographql.com/dev");
+    
     HttpServer::new(move || {
         App::new()
             .app_data(schema.clone())
