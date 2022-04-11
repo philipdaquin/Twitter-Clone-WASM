@@ -20,7 +20,7 @@ impl TrackQuery {
         };
         let track = Track { 
             id: "track_01".into() ,
-            title: "Astro Kitty, Space Exporer".to_string(), 
+            title: "Astro Kitty, Space Explorer".to_string(), 
             author,
             thumbnail: "https://res.cloudinary.com/dety84pbu/image/upload/v1598465568/nebula_cat_djkt9r.jpg".to_string(), 
             length: 1210, 
