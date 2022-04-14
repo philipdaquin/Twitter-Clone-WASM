@@ -4,7 +4,8 @@
   "description": "## TechStack  - WebAssembly - Rust Programming Language - Yew  - Apollo Server  - Async-GraphQL - Apache Kafka - Actix-Web - Diesel  - Postgresql",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-gate": "nodemon index.js"
   },
   "repository": {
     "type": "git",

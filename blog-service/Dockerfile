@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y libpq-dev cmake
 
 # create empty project for caching dependencies
 RUN USER=root cargo new --bin /blog-service/docker-build
-COPY /common/ ./blog-service/common/
+COPY /common-utils/ /blog-service/common-utils/
 WORKDIR /blog-service/docker-build
 COPY /Cargo.lock ./
 COPY /blog-service/Cargo.toml ./
