@@ -2,12 +2,11 @@ version: "3.9"
 services:
 #  Blog Service -------------------------------------------
   blog-service:
-    image: 
+    image: apollo/blog_service:latest
     container_name: blog-service
     restart: always
     depends_on:
       - blog-db
-
     environment: 
       DATABASE_URL: postgres://$POSTGRES_USER:$BLOG_PASSWORD@localhost/blogservice
       PORT: 8080
@@ -22,14 +21,14 @@ services:
       retries: 5
       start_period: 30s
     ports: 
-      - ${POST}:8080
+      - 8080:8080
   blog-db:
     image: postgres:13.2-alpine
-    container: blog-db 
+    container_name: blog-db 
     restart: always
     environment:
       POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_DB: blogservice
+      POSTGRES_DB: $BLOG_DB
       POSTGRES_PASSWORD: $BLOG_PASSWORD
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -40,15 +39,16 @@ services:
 
 #  authentication service -----------------------------------
   auth-service: 
-    image: 
+    image: apollo/auth_service:latest
     container_name: auth-service
     restart: always
     depends_on: 
       - user_db 
     environment:
       DATABASE_URL: postgres://$POSTGRES_USER:$AUTH_PASSWORD@localhost/authservice
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      PASSWORD_SECRET_KEY: ${PASSWORD_SECRET_KEY}
+      JWT_SECRET_KEY: $JWT_SECRET_KEY
+      PASSWORD_SECRET_KEY: $PASSWORD_SECRET_KEY
+      PORT: $AUTH_PORT
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8081/"]
       interval: 1m30s
@@ -56,15 +56,15 @@ services:
       retries: 5
       start_period: 30s
     ports:
-      - 8081: 8081
+      - $AUTH_PORT:8081
   user_db: 
-    image: 
+    image: postgres:13.2-alpine
     container_name: user_db 
     restart: always
     environment:
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_DB_HOST: $POSTGRES_DB_HOST
-      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_DB: $AUTH_DB
       POSTGRES_PASSWORD: $AUTH_PASSWORD
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -76,8 +76,8 @@ services:
 
   # Apollo Server -------------------------------------------
   apollo-gateway:
-    image: 
-    container_name: 
+    image: apollo/gateway:lateway
+    container_name: apollo_gateway
     restart: always
     depends_on:
       - auth-service 
