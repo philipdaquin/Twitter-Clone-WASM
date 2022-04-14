@@ -32,8 +32,7 @@ pub fn configure_service(cfg: &mut web::ServiceConfig) {
 #[route("/graphql", method = "GET", method = "POST")]
 pub async fn graphql(schema: web::Data<AppSchema>, req: GraphQLRequest, http: HttpRequest) -> GraphQLResponse {
     
-    let (role, 
-        mut request) = (get_role(http), req.into_inner());
+    let (role, mut request) = (get_role(http), req.into_inner());
     if let Some(user) = role { 
         request = request.data(user);
     }
