@@ -12,7 +12,7 @@ use crate::db::{DbPool, DbPooledConnection};
 use super::schema::{Mutation as SchemaMutation, Query as SchemaQuery, AppSchema, AppSchemaBuilder};
 use diesel::{result::Error as DbError, QueryDsl};
 use diesel_migrations::{MigrationError, embed_migrations};
-use common::token::{get_role};
+use common_utils::token::{get_role};
 use std::env::var;
 use super::modules::user_model::provider;
 

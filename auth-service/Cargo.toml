@@ -26,7 +26,7 @@ chrono = { version = "0.4", features = ["serde"] }
 argonautica = "0.2.0"
 lazy_static = "1.4.0"
 uuid = {version = "0.8.2", features = ["serde","v4"]}
-common = { path ="../common" } 
+common-utils = { path ="../common-utils" } 
 jsonwebtoken = "8.0.1"
 strum = "0.24.0"
 strum_macros = "0.24.0"

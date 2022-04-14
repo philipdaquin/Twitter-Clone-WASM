@@ -9,7 +9,7 @@ use crate::graphql_module::{
 use super::model::{NewUser, User, UserObject, UserInput, SignInInput};
 use crate::graphql_module::schema::AppSchema;
 use crate::graphql_module::modules;
-use common::token::Role as AuthRole;
+use common_utils::token::Role as AuthRole;
 use crate::graphql_module::modules::utils::RoleGuard;
 // use crate::graphql_module::modules::user_model::provider;
 use super::provider;
@@ -129,7 +129,7 @@ impl UserMutate {
             if let Ok(matching) = verify_password(&user.hash,&input.password) { 
                 if matching {
                     let role = AuthRole::from_str(user.role.as_str()).expect("Unable to convert to AuthRole");
-                    return Ok(common::token::generate_token(user.username, role));
+                    return Ok(common_utils::token::generate_token(user.username, role));
                 }
             }
         }

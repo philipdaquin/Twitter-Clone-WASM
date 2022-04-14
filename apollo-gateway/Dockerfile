@@ -1,10 +1,2 @@
 FROM rust:1.59.0  
 
-WORKDIR 
-
-ENV CARGO_TERM_COLOR always
-
-COPY 
-
-
-RUN 

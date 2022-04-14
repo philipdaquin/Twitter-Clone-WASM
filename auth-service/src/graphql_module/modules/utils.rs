@@ -3,7 +3,7 @@ use argonautica::{Error as HasherError, Hasher, Verifier};
 use serde::{Serialize, Deserialize};
 use strum_macros::{Display, EnumString};
 use std::env::var;
-use common::token::Role as AuthRole;
+use common_utils::token::Role as AuthRole;
 use jsonwebtoken;
 use async_graphql::Guard;
 use async_graphql::*;
