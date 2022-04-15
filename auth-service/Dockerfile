@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y libpq-dev cmake
 # create empty project for caching dependencies
 RUN USER=root cargo new --bin /auth-service/docker-build
 # Get common_utils and insert into docker build 
-COPY /common_utils /auth-service/common_utils/
+COPY ./common_utils/* ./auth-service/common_utils/
 # CD into WORKDIR 
 WORKDIR /auth-service/docker-build 
 # Copy the current Cargo.lock file and insert into docker-build  
