@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+   # Planets service
+  blog-service:
+    build:
+      context: .
+      dockerfile: ./blog-service/Dockerfile
+
+  # Satellites service
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+ # Apollo server
+  apollo-gateway:
+    build: apollo-gateway
+    dockerfile: ./apollo_gateway/Dockerfile
