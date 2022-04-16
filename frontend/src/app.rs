@@ -2,9 +2,10 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use crate::{
     components::{
-        navbar::Navbar,
-        header::Header,
-        footer::Footer
+        Navbar,
+        Header,
+        Footer,
+        Sidebar,
     },
     router::{AppRoute, 
         home::Home,
@@ -32,7 +33,10 @@ impl Component for App {
         html! {
             <>
                 <BrowserRouter>
-                    <Navbar/>
+                    <Sidebar/>
+                    //  Feed
+                    //  Widgets
+                    // <Navbar/>
                         <Switch<AppRoute> render={Switch::render(switch)} />
                     <Footer/>
                 </BrowserRouter>
