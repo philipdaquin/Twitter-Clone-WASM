@@ -19,9 +19,8 @@
   "homepage": "https://github.com/philipdaquin/Medium-Twitter-Clone#readme",
   "dependencies": {
     "@apollo/federation": "^0.36.0",
-    "@apollo/gateway": "^0.50.0",
+    "@apollo/gateway": "^0.50.1",
     "apollo-server": "^3.6.7",
-    
     "concurrently": "^7.1.0",
     "express": "^4.17.3",
     "graphql": "^16.3.0",

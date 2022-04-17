@@ -1,5 +1,7 @@
 const { ApolloServer } = require('apollo-server');
-const { ApolloGateway, RemoteGraphQLDataSource} = require('@apollo/gateway');
+const { ApolloGateway, RemoteGraphQLDataSource, 
+    IntrospectAndCompose
+} = require('@apollo/gateway');
 
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource { 
@@ -24,21 +26,23 @@ function get_service_url(service_name, port) {
     return "http://" + host + ":" + port;
 }
 
-const gateway = new ApolloServer(
-    {
-        serviceList: [
+const gateway = new ApolloGateway({
+    supergraphSdl: new IntrospectAndCompose({
+        subgraphs: [
             {name: "auth-service", url: get_service_url("auth-service", 8081)},
             {name: "blog-service", url: get_service_url("blog-service", 8080)},
         ],
-        buildService({name, url}) { 
-            return new AuthenticatedDataSource({url});
+        buildService({name, url}) {
+            return new AuthenticatedDataSource({ url });
         },
-    }
-);
+    }),
+});
 
 const apollo_server = new ApolloServer( 
     { 
-        gateway, subscriptions: false, context: ({ req}) => ({
+        gateway, 
+        subscriptions: false, 
+        context: ({ req}) => ({
             authHeaderValue: req.headers.authorization
         })
     }
