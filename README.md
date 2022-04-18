@@ -1,4 +1,4 @@
-# Medium/ Instagram Inspired Blogging Platform on Rust/ WASM 
+# Blogging Platform on Rust/ WASM 
 
 ## TechStack 
 - WebAssembly
