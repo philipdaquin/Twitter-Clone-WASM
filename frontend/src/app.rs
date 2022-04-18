@@ -6,6 +6,8 @@ use crate::{
         Header,
         Footer,
         Sidebar,
+        Feed,
+        Widget
     },
     router::{AppRoute, 
         home::Home,
@@ -32,14 +34,15 @@ impl Component for App {
     fn view(&self, ctx: &Context<Self>) -> Html {
         html! {
             <>
-                <BrowserRouter>
-                    <Sidebar/>
-                    //  Feed
-                    //  Widgets
-                    // <Navbar/>
+                <section class="app">
+                    <BrowserRouter>
                         <Switch<AppRoute> render={Switch::render(switch)} />
-                    <Footer/>
-                </BrowserRouter>
+                        <Sidebar/>
+                        <Feed/>
+                        <Widget/>
+                        <Footer/>
+                    </BrowserRouter>
+                </section>
             </>
         }
     }
