@@ -1,15 +1,19 @@
-mod app;
-mod api;
-mod types;
-mod service;
-pub mod components;
-mod hooks;
-pub mod router;
+#![recursion_limit = "512"]
 
-use wasm_bindgen::prelude::*;
+pub mod app;
+pub mod api;
+pub mod service;
+pub mod components;
+pub mod hooks;
+pub mod router;
+pub mod types;
+
+
+extern crate serde;
 use crate::app::App;
 
 
+use wasm_bindgen::prelude::*;
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;

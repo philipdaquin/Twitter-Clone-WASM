@@ -1,5 +1,6 @@
 use yew::{prelude::*, function_component, html, Html};
-use crate::types::UserInfo;
+use crate::types::user::UserInfo;
+
 
 #[derive(Properties, Clone, Debug, PartialEq)]
 pub struct TweetProp { 
