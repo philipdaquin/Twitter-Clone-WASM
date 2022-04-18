@@ -1,7 +1,6 @@
 use yew::{prelude::*, function_component, html, Html};
 use super::sidebar_options::SidebarOptions;
 
-
 #[function_component(Sidebar)]
 pub fn sidebar() -> Html {
 
@@ -25,11 +24,11 @@ pub fn sidebar() -> Html {
         "bx bx-dots-horizontal-rounded",
         "bx bx-search"
     );
-
+    
     html! {
         <>
             <section class="sidebar">
-                <i class="bx bxl-twitter" ></i>
+                <i class="bx bxl-twitter sidebar__twitterIcon" ></i>
                 <SidebarOptions text={"Home"} icon={home} active={true}/>
                 <SidebarOptions text={"Explore"} icon={search}/>
                 <SidebarOptions text={"Notifications"} icon={notifications}/>
@@ -38,8 +37,8 @@ pub fn sidebar() -> Html {
                 <SidebarOptions text={"Lists"} icon={lists}/>
                 <SidebarOptions text={"Profile"} icon={profile}/>
                 <SidebarOptions text={"More"} icon={more}/>
-
-                <button class="sidebar_tweet">{"Tweet"}</button>
+                
+                <button class="sidebar__tweet" >{"TWEET"}</button>
             </section>
         </>
     }

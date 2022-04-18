@@ -7,7 +7,7 @@ pub fn home_function() -> Html {
     
     html! {
         <>
-           <div>{"Hello World"}</div>
+           <div>{""}</div>
         </>
     }
 }
