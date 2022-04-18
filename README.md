@@ -4,12 +4,16 @@
 - WebAssembly
 - Rust Programming Language
 - Yew 
-- Apollo Server 
+- Apollo Federation 
 - Async-GraphQL
 - Apache Kafka
 - Actix-Web
 - Diesel 
 - Postgresql
+- Docker
+- Grafana
+- Prometheus 
+
 
 
 
