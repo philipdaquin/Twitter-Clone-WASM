@@ -1,22 +1,22 @@
 use yew::{prelude::*, function_component, html, Html};
 use super::{TweetBox, Post};
 use crate::types::post::PostInfo;
-// use chrono::{DateTime, Utc, Local};
+use chrono::prelude::*;
 
 #[function_component(Feed)]
 pub fn feed_function() -> Html {
     
-    // let user_post = PostInfo { 
-    //     id: 1,
-    //     avatar: "../../assets/img/host.png ".to_string(),
-    //     username: "@johnapple".to_string(),
-    //     firstname: "Steve".to_string(),
-    //     lastname: "Jobs".to_string(),
-    //     verified: true, 
-    //     content: "This is my first post".to_string(),
-    //     created_at: Local::today(),
-    //     updated_at: Local::today(),
-    // };
+    let user_post = PostInfo { 
+        id: 1,
+        avatar: "../../assets/img/host.png ".to_string(),
+        username: "@johnapple".to_string(),
+        firstname: "Steve".to_string(),
+        lastname: "Jobs".to_string(),
+        verified: true, 
+        content: "This is my first post".to_string(),
+        // created_at: chrono::offset::Utc::now(),
+        // updated_at: chrono::offset::Utc::now(),
+    };
 
     return html! {
         <>
@@ -26,10 +26,10 @@ pub fn feed_function() -> Html {
                 </div>
 
                 <TweetBox/>
-
-                // <Post 
-                //     post_info={user_post}
-                // />
+                
+                <Post 
+                    post_info={user_post}
+                />
                  
                 // Post 
                 // Post 

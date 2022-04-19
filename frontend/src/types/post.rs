@@ -11,8 +11,8 @@ pub struct PostInfo {
     pub lastname: String,
     pub verified: bool,
     pub content: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    // pub created_at: DateTime<Utc>,
+    // pub updated_at: DateTime<Utc>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

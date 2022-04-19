@@ -18,14 +18,14 @@ pub fn post_info(PostProps { post_info }: &PostProps ) -> Html {
         lastname,
         verified, 
         content,
-        created_at, 
-        updated_at
+        // created_at, 
+        // updated_at
     } = post_info.clone();
 
     let verified_user = if verified { 
-        html! {"✅"}
+            " ✅"
     } else { 
-        html! {}
+        ""
     };
     
 
@@ -39,11 +39,11 @@ pub fn post_info(PostProps { post_info }: &PostProps ) -> Html {
                     <div class="post__">
                         <div class="post__headerText">
                             <h3>
-                                {format!("{:?} {:?}", firstname, lastname)} <span>
-                                    {format!("{:?}", verified_user)}
+                                {format!("{} {}", firstname, lastname)} <span>
+                                    {format!("{}", verified_user)}
                                 </span>
                                 <span>
-                                    {created_at.format("%B %e, %Y")}
+                                    // {created_at.format("%B %e, %Y")}
                                 </span>
                             </h3>
                         </div>
@@ -53,8 +53,11 @@ pub fn post_info(PostProps { post_info }: &PostProps ) -> Html {
                     </div>
                     <img src="" alt=""/>
                     <div class="post__footer">
-                        <span class="material-icons-outlined"></span>
+                        <i class="bx bx-message-rounded"></i>
+                        <i class="bx bx-repeat"></i>
                         <i class="bx bx-heart"></i>
+                        <i class="bx bx-upload"></i>
+
                     </div>
                 </div>
             </section>
