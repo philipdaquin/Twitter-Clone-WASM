@@ -4,7 +4,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
         <!-- Assets -->
-        <script type="module">import init from '/index-4ac69c4f613d692e.js';init('/index-4ac69c4f613d692e_bg.wasm');</script>
+        <script type="module">import init from '/index-e2f75b7dcfad45f2.js';init('/index-e2f75b7dcfad45f2_bg.wasm');</script>
         <!--========== BOX ICONS ==========-->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
 
@@ -28,8 +28,8 @@
 
 
     
-<link rel="preload" href="/index-4ac69c4f613d692e_bg.wasm" as="fetch" type="application/wasm" crossorigin="">
-<link rel="modulepreload" href="/index-4ac69c4f613d692e.js"></head>
+<link rel="preload" href="/index-e2f75b7dcfad45f2_bg.wasm" as="fetch" type="application/wasm" crossorigin="">
+<link rel="modulepreload" href="/index-e2f75b7dcfad45f2.js"></head>
     <body>
         <header>
         </header>
@@ -43,30 +43,4 @@
         <!-- JS Interop -->
         <script crossorigin="false" src="assets/js/main.js"></script>
     
-<script>(function () {
-    var url = 'ws://' + window.location.host + '/_trunk/ws';
-    var poll_interval = 5000;
-    var reload_upon_connect = () => {
-        window.setTimeout(
-            () => {
-                // when we successfully reconnect, we'll force a
-                // reload (since we presumably lost connection to
-                // trunk due to it being killed, so it will have
-                // rebuilt on restart)
-                var ws = new WebSocket(url);
-                ws.onopen = () => window.location.reload();
-                ws.onclose = reload_upon_connect;
-            },
-            poll_interval);
-    };
-
-    var ws = new WebSocket(url);
-    ws.onmessage = (ev) => {
-        const msg = JSON.parse(ev.data);
-        if (msg.reload) {
-            window.location.reload();
-        }
-    };
-    ws.onclose = reload_upon_connect;
-})()
-</script></body></html>
+</body></html>
