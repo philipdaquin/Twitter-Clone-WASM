@@ -15,3 +15,4 @@ pub use navbar::Navbar;
 pub use feed::Feed;
 pub use widget::Widget;
 pub use tweetbox::TweetBox;
+pub use post::Post;
