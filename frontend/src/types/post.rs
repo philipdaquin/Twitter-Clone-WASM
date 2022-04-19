@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc, Date,  NaiveDateTime, Local};
+use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -12,11 +12,17 @@ pub struct PostInfo {
     pub verified: bool,
     pub content: String,
     pub created_at: DateTime<Utc>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub updated_at: DateTime<Utc>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PostInfoWrapper { 
     pub posts: PostInfo,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PostInfoList { 
+    pub posts: Vec<PostInfo>
 }
 
