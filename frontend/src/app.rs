@@ -2,7 +2,6 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use crate::{
     components::{
-        Navbar,
         Header,
         Footer,
         Sidebar,

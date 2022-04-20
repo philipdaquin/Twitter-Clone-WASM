@@ -1,5 +1,8 @@
 use yew::{prelude::*, function_component, html, Html};
 use super::sidebar_options::SidebarOptions;
+use yew_router::prelude::*;
+use crate::router::AppRoute;
+
 
 #[function_component(Sidebar)]
 pub fn sidebar() -> Html {

@@ -1,6 +1,11 @@
 use yew::{prelude::*, function_component, html, Html};
 use super::{TweetBox, Post};
-use crate::models::post::{PostInfo, PostAttributes};
+use crate::models::{
+    post::{PostInfo, PostAttributes},
+    profileinfo::UserProfile
+
+
+};
 use chrono::{DateTime, TimeZone, NaiveDateTime, Utc};
 
 #[function_component(Feed)]
@@ -27,6 +32,17 @@ pub fn feed_function() -> Html {
         num_of_comments: 12 
     };
 
+    let user_info = UserProfile { 
+        id: 1, 
+        avatar: "https://cdn.geekwire.com/wp-content/uploads/2017/06/trumptwitter-300x300.jpg".to_string(), 
+        firstname: "Steve".to_string(), 
+        lastname: "Jobs".to_string(), 
+        username: "@johnapple".to_string(), 
+        bio: Some("Hello this is my first  bio".to_string()), 
+        joined_at: dt 
+    };
+
+
     return html! {
         <>
             <section class="feed"> 
@@ -36,11 +52,12 @@ pub fn feed_function() -> Html {
 
                 <TweetBox/>
                 
-                <Post post_info={user_post.clone()} post_attr={attr.clone()}/>
-                <Post post_info={user_post.clone()} post_attr={attr.clone()}/>
-                <Post post_info={user_post.clone()} post_attr={attr.clone()}/>
-                <Post post_info={user_post.clone()} post_attr={attr.clone()}/>
-                <Post post_info={user_post.clone()} post_attr={attr.clone()}/>
+                <Post 
+                    post_info={user_post.clone()} 
+                    post_attr={attr.clone()}
+                    user_info={user_info.clone()}
+                />
+               
                  
             </section>
         </>
