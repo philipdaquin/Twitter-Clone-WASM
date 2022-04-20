@@ -32,7 +32,8 @@ pub fn sidebar() -> Html {
         <>
             <section class="sidebar">
                 <i class="bx bxl-twitter sidebar__twitterIcon" ></i>
-                <SidebarOptions text={"Home"} icon={home} active={true}/>
+                <Link<AppRoute> to={AppRoute::Home}>
+                    <SidebarOptions text={"Home"} icon={home} active={true}/></Link<AppRoute>>
                 <SidebarOptions text={"Explore"} icon={search}/>
                 <SidebarOptions text={"Notifications"} icon={notifications}/>
                 <SidebarOptions text={"Messages"} icon={message}/>

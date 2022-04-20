@@ -39,7 +39,7 @@ pub fn feed_function() -> Html {
         lastname: "Jobs".to_string(), 
         username: "@johnapple".to_string(), 
         bio: Some("Hello this is my first  bio".to_string()), 
-        joined_at: dt 
+        // joined_at: dt 
     };
 
 

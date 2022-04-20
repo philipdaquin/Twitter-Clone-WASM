@@ -45,7 +45,7 @@ pub fn post_info(PostProps { post_info, post_attr, user_info }: &PostProps ) -> 
         <>  
             <section class="post">
                 <div class="post__avatar">
-                    <Link<AppRoute> to={AppRoute::UserProfile {user_id: user_info.id.clone() }}>
+                    <Link<AppRoute> to={AppRoute::UserProfile {username: user_info.username.clone() }}>
                         <img src={avatar} alt="" class="post_image"/>
                     </Link<AppRoute>>    
                 </div>

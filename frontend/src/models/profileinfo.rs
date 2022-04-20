@@ -13,7 +13,7 @@ pub struct ProfileObject {
     pub lastname: String, 
     pub username: String,
     pub bio: Option<String>, 
-    pub joined_at: DateTime<Utc>,
+    // pub joined_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

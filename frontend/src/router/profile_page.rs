@@ -1,32 +1,26 @@
 use yew::{prelude::*, function_component, html, Html};
-use crate::models::profileinfo::ProfileObject;
-use crate::components::profile::profile_comp::ProfileComp;
+use crate::models::{
+    profileinfo::ProfileObject,
+};
+use crate::components::profile_feed::ProfileFeed;
 
 #[derive(Properties, PartialEq, Clone, Debug)]
 pub struct ProfileProps { 
     #[prop_or_default]
-    pub user_id: i32,
+    pub username: String,
 
 }
 #[function_component(ProfilePage)]
-pub fn profile_info(ProfileProps {user_id}: &ProfileProps) -> Html {
+pub fn profile_info(ProfileProps {username}: &ProfileProps) -> Html {
     
-    //  Query data from database using UserId and Generate this:
-    let user_profile = ProfileObject { 
-        id: todo!(), 
-        avatar: todo!(), 
-        firstname: todo!(), 
-        lastname: todo!(), 
-        username: todo!(), 
-        bio: todo!(), 
-        joined_at: todo!() 
-    };
+    
 
 
     html! {
         <>
+            <img src="https://media.vanityfair.com/photos/6224ed983b4f9b2db0035fff/master/pass/Donald-Trump.jpg" alt=""/>
             <section>
-                <ProfileComp profile_info={user_profile.clone()}/>
+                <ProfileFeed/>                
             </section>
         </>
     }

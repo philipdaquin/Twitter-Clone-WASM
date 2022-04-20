@@ -30,12 +30,12 @@ pub enum AppRoute {
     #[at("/follow")]
     FollowUser,
 
-    #[at("/status/{post_id}")]
+    #[at("/status/:post_id")]
     FullPost { post_id: i32 },
 
     
-    #[at("/status/{user_id}")]
-    UserProfile { user_id: i32 },
+    #[at("/status/:username")]
+    UserProfile { username: String },
     
 }
 
@@ -46,6 +46,6 @@ pub fn switch(routes: &AppRoute) -> Html {
         AppRoute::ContactUs => html! { <Contact/>},
         AppRoute::FollowUser => html! { <Follow/>},
         AppRoute::FullPost { post_id } => html! { <FullPost post_id={*post_id} />},
-        AppRoute::UserProfile { user_id  } => html! { <ProfilePage user_id={*user_id} />}
+        AppRoute::UserProfile { username  } => html! { <ProfilePage username={(username).clone()} />}
     }
 }

@@ -17,17 +17,19 @@ pub fn profile_function(ProfileObjectProps { profile_info}: &ProfileObjectProps)
         lastname, 
         username, 
         bio,
-        joined_at } = profile_info.clone();
+        // joined_at
+     } = profile_info.clone();
     
     return html! {
         <>
-            <section>
+            <section class="feed">
                 <div><img src={avatar} alt=""/></div>
                 <h2>{format!("{} {}", firstname, lastname)}</h2>
                 <p>{username}</p>
                 <p>{bio.unwrap_or_default()}</p>
                 <p>{
-                    joined_at.format("%B %e, %Y")
+                    // joined_at.format("%B %e, %Y") ""
+                    "Hello"
                 }</p>
             </section>
         </>

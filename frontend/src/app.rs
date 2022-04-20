@@ -36,10 +36,8 @@ impl Component for App {
                 <section class="app">
                     <BrowserRouter>
                         <Sidebar/>
-                        <Feed/>
                             <Switch<AppRoute> render={Switch::render(switch)} />
                         <Widget/>
-                        // <Footer/>
                     </BrowserRouter>
                 </section>
             </>
