@@ -39,7 +39,7 @@ pub fn post_info(PostProps { post_info, post_attr }: &PostProps ) -> Html {
         <>  
             <section class="post">
                 <div class="post__avatar">
-                    <img src={avatar} alt=""/>
+                    <img src={avatar} alt="" class="post_image"/>
                 </div>
                 <div class="post__body">
                     <div class="post__header">

@@ -40,7 +40,7 @@ impl Component for App {
                         <Feed/>
                             <Switch<AppRoute> render={Switch::render(switch)} />
                         <Widget/>
-                        <Footer/>
+                        // <Footer/>
                     </BrowserRouter>
                 </section>
             </>

@@ -42,7 +42,10 @@
 }
 
 .post__avatar {
-  padding: 20px;
+  padding: 10px;
+}
+.post_image { 
+  /* border-image-width: 2; */
 }
 
 .post_footer_icon { 

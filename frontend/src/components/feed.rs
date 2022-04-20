@@ -10,7 +10,7 @@ pub fn feed_function() -> Html {
     let dt = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(61, 0), Utc);
     let user_post = PostInfo { 
         id: 1,
-        avatar: "../../assets/img/host.png ".to_string(),
+        avatar: "https://cdn.geekwire.com/wp-content/uploads/2017/06/trumptwitter-300x300.jpg".to_string(),
         username: "@johnapple".to_string(),
         firstname: "Steve".to_string(),
         lastname: "Jobs".to_string(),
@@ -20,7 +20,6 @@ pub fn feed_function() -> Html {
         created_at: dt,
         updated_at: dt,
     };
-
     let attr = PostAttributes {
         post_id: 1, 
         num_of_likes: 222, 
