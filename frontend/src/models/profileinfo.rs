@@ -6,7 +6,7 @@ use serde::Serialize;
 
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UserProfile { 
+pub struct ProfileObject { 
     pub id: i32, 
     pub avatar: String, 
     pub firstname: String, 
@@ -17,6 +17,6 @@ pub struct UserProfile {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UserProfileWrapper { 
-    pub user_profile: UserProfile
+pub struct ProfileObjectWrapper { 
+    pub user_profile: ProfileObject
 }

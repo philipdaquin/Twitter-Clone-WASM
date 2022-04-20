@@ -2,7 +2,7 @@ use yew::{prelude::*, function_component, html, Html};
 use chrono::prelude::*;
 use crate::models::{
     post::{PostInfo, PostAttributes},
-    profileinfo::{UserProfile}
+    profileinfo::{ProfileObject}
 };
 use yew_router::prelude::*;
 use crate::router::AppRoute;
@@ -12,7 +12,7 @@ use crate::router::AppRoute;
 pub struct PostProps { 
     pub post_info: PostInfo,
     pub post_attr: PostAttributes,
-    pub user_info: UserProfile
+    pub user_info: ProfileObject
 }
 
 #[function_component(Post)]
@@ -46,7 +46,7 @@ pub fn post_info(PostProps { post_info, post_attr, user_info }: &PostProps ) -> 
             <section class="post">
                 <div class="post__avatar">
                     <Link<AppRoute> to={AppRoute::UserProfile {user_id: user_info.id.clone() }}>
-                    <img src={avatar} alt="" class="post_image"/>
+                        <img src={avatar} alt="" class="post_image"/>
                     </Link<AppRoute>>    
                 </div>
                 <div class="post__body">

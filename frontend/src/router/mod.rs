@@ -3,7 +3,7 @@ pub mod home;
 pub mod follow;
 pub mod contact;
 pub mod full_post;
-pub mod profile;
+pub mod profile_page;
 
 use crate::router::{
     contact::Contact,
@@ -11,7 +11,7 @@ use crate::router::{
     home::Home, 
     about::About,
     full_post::FullPost,
-    profile::Profile
+    profile_page::ProfilePage
 };
 use yew_router::prelude::*;
 use yew::prelude::*;
@@ -46,6 +46,6 @@ pub fn switch(routes: &AppRoute) -> Html {
         AppRoute::ContactUs => html! { <Contact/>},
         AppRoute::FollowUser => html! { <Follow/>},
         AppRoute::FullPost { post_id } => html! { <FullPost post_id={*post_id} />},
-        AppRoute::UserProfile { user_id  } => html! { <Profile user_id={*user_id} />}
+        AppRoute::UserProfile { user_id  } => html! { <ProfilePage user_id={*user_id} />}
     }
 }

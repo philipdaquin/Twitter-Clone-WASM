@@ -6,7 +6,7 @@ pub mod widgets;
 pub mod tweetbox;
 pub mod post;
 pub mod widget;
-
+pub mod profile;
 
 pub use sidebar::sidebar::Sidebar;
 pub use footer::Footer;

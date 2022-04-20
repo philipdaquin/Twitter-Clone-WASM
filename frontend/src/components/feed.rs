@@ -2,7 +2,7 @@ use yew::{prelude::*, function_component, html, Html};
 use super::{TweetBox, Post};
 use crate::models::{
     post::{PostInfo, PostAttributes},
-    profileinfo::UserProfile
+    profileinfo::ProfileObject   
 
 
 };
@@ -32,7 +32,7 @@ pub fn feed_function() -> Html {
         num_of_comments: 12 
     };
 
-    let user_info = UserProfile { 
+    let user_info = ProfileObject { 
         id: 1, 
         avatar: "https://cdn.geekwire.com/wp-content/uploads/2017/06/trumptwitter-300x300.jpg".to_string(), 
         firstname: "Steve".to_string(), 
