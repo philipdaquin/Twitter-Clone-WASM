@@ -11,9 +11,19 @@ pub struct PostInfo {
     pub lastname: String,
     pub verified: bool,
     pub content: String,
-    // pub created_at: DateTime<Utc>,
-    // pub updated_at: DateTime<Utc>,
+    pub media: String, 
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct PostAttributes {
+    pub post_id: i32,  
+    pub num_of_likes: i32,
+    pub num_of_retweets: i32, 
+    pub num_of_comments: i32 
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PostInfoWrapper { 

@@ -44,3 +44,11 @@
 .post__avatar {
   padding: 20px;
 }
+
+.post_footer_icon { 
+  font-size: 20;
+  font-weight: 200;
+}
+.post_num { 
+  font-size: 1px;
+}

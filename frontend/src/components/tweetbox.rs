@@ -1,5 +1,5 @@
 use yew::{prelude::*, function_component, html, Html};
-use crate::types::user::UserInfo;
+use crate::models::user::UserInfo;
 
 
 #[derive(Properties, Clone, Debug, PartialEq)]

@@ -3,6 +3,7 @@
     border-bottom: 8px solid var(--twitter-background);
     padding-right: 10px;
 }
+
 .tweetBox > form {
     display: flex;
     flex-direction: column;
@@ -21,8 +22,8 @@
 }
 
 .tweetBox__imageInput {
-    order: none;
-  padding: 10px;
+    border: none;
+    padding: 10px;
 }
 
 .tweetBox__tweetButton {
@@ -34,6 +35,6 @@
     border-radius: 30px !important;
     width: 80px;
     height: 40px !important;
-  margin-top: 20px !important;
-  margin-left: auto !important;
+    margin-top: 20px !important;
+    margin-left: auto !important;
 }

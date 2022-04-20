@@ -6,8 +6,7 @@ pub mod service;
 pub mod components;
 pub mod hooks;
 pub mod router;
-pub mod types;
-
+pub mod models;
 
 extern crate serde;
 use crate::app::App;
