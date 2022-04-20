@@ -22,10 +22,17 @@ pub fn news_function(WidgetProps { news_widget }: &WidgetProps) -> Html {
                     <i class="bx bx-search widgets__searchIcon"></i>
                     <input type="text" placeholder="Search Twitter"/>
                 </div>
+                <h2>{"What's Happenning?"}</h2>
                 <div class="widgets__widgetContainer">
-                        
+                    <h3>{slug}</h3>
+                    <h2>{heading}</h2>
+                    <p>{subheading}</p>
+                    <div>
+                        <img src={media} alt=""/>
+                    </div>
                 </div>
             </section>
         </>
     }
 }
+
