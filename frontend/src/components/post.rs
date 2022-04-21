@@ -52,14 +52,15 @@ pub fn post_info(PostProps { post_info, post_attr, user_info }: &PostProps ) -> 
                 <div class="post__body">
                     <div class="post__header">
                         <div class="post__headerText">
-                            <h3>
-                                {format!("{} {}", firstname, lastname)} 
-                                <span class="post__headerSpecial">
-                                    {format!("{}", verified_user)}
-                                    {format!("{}", username.clone())}
-                                    <p>{created_at.format("%B %e, %Y")}</p>
-                                </span>
-                            </h3>
+                            <Link<AppRoute> to={AppRoute::UserProfile {username: user_info.username.clone()}}>
+                                <h3>{format!("{} {}", firstname, lastname)} 
+                                    <span class="post__headerSpecial">
+                                        {format!("{}", verified_user)}
+                                        {format!("{}", username.clone())}
+                                    </span>
+                                </h3>
+                            </Link<AppRoute>>
+                            <p>{created_at.format("%B %e, %Y")}</p>
                         </div>
                         <div class="post__headerDescription"><p>{content}</p></div>
                     </div>

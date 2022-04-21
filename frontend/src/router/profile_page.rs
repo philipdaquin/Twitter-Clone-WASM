@@ -18,7 +18,7 @@ pub fn profile_info(ProfileProps {username}: &ProfileProps) -> Html {
 
     html! {
         <>
-            <img src="https://media.vanityfair.com/photos/6224ed983b4f9b2db0035fff/master/pass/Donald-Trump.jpg" alt=""/>
+            // <img src="https://media.vanityfair.com/photos/6224ed983b4f9b2db0035fff/master/pass/Donald-Trump.jpg" alt=""/>
             <section>
                 <ProfileFeed/>                
             </section>

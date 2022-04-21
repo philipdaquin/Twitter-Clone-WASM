@@ -22,7 +22,7 @@ pub fn profile_function(ProfileObjectProps { profile_info}: &ProfileObjectProps)
     
     return html! {
         <>
-            <section class="feed">
+            <section class="">
                 <div><img src={avatar} alt=""/></div>
                 <h2>{format!("{} {}", firstname, lastname)}</h2>
                 <p>{username}</p>
