@@ -12,7 +12,8 @@ yew = "0.19.3"
 yew-router = "0.16.0"
 yew_styles = "0.11.0"
 yew-hooks ="0.1.36"
-
+env_logger = "0.9"
+dotenv = "0.15.0"
 yew-interop = {version = "0.3", features = ["script"]}
 serde = { version = "1", features = ["derive"] }
 wee_alloc = "0.4.5"
