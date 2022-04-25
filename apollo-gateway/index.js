@@ -35,12 +35,15 @@ const gateway = new ApolloGateway({
         buildService({name, url}) {
             return new AuthenticatedDataSource({ url });
         },
+        
     }),
 });
 
 const apollo_server = new ApolloServer( 
     { 
         gateway, 
+        engine: false,
+        //  Subscriptions are unsupported but planned for a future gateway verison  
         subscriptions: false, 
         context: ({ req}) => ({
             authHeaderValue: req.headers.authorization
