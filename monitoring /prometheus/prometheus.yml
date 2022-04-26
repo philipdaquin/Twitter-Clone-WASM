@@ -1,0 +1,15 @@
+scrape_config:
+  - job_name: prometheus_monitoring_service
+    scrape_interval: 6s
+    static_configs:
+      - targets: ['host.docker.internal:9000']
+  - job_name: cadvisor
+    scrape_interval: 6s
+    static_configs: 
+      - targets: ['cadvisor:8080']
+rule_files:
+  - 'rules.yml'
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager: 9093']
