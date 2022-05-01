@@ -5,6 +5,7 @@
 - Rust Programming Language
 - Yew 
 - Apollo Federation/ Apollo Server  
+- Graphql Client
 - Async-GraphQL
 - Apache Kafka
 - Actix-Web
