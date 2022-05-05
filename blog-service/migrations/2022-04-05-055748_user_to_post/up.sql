@@ -1,13 +1,4 @@
 -- USER MANAGEMENT 
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    username VARCHAR(30) NOT NULL UNIQUE,
-    location VARCHAR(180) DEFAULT NULL,
-    email VARCHAR(128) UNIQUE NOT NULL UNIQUE
-);
 CREATE UNIQUE INDEX users_email_index ON users(email);
 -- POSTS
 CREATE TABLE  posts (
@@ -21,18 +12,6 @@ CREATE TABLE  posts (
     body text NOT NULL,
     featured_image text NOT NULL
 );
--- COMMENTS
-CREATE TABLE IF NOT EXISTS comments ( 
-    id INTEGER PRIMARY KEY,
-    user_id SERIAL NOT NULL REFERENCES users (id),
-    post_id SERIAL NOT NULL REFERENCES posts (id),
-    body TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-
-
 
 
 
