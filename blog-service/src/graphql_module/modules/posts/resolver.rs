@@ -12,7 +12,7 @@ use async_graphql::Error;
 #[derive(Default)]
 pub struct PostQuery;
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Serialize, Deserialize)]
 pub struct PostObject { 
     pub id: ID,
     pub user_id: User,
@@ -38,7 +38,6 @@ impl PostQuery {
     }
     #[graphql(name = "getPostbyId")]
     async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
-        let conn = get_conn_from_ctx(ctx);
         provider::get_post_by_id(post_id.parse::<i32>().expect(""), &get_conn_from_ctx(ctx))
             .ok()
             .map(|f| PostObject::from(&f))
@@ -55,29 +54,30 @@ pub fn get_posts_user(ctx: &Context<'_>, user_id: ID) -> Vec<PostObject> {
         .to_string()
         .parse::<i32>()
         .expect("Could not Parse Post_ID");
-    provider::get_by_author(author_id, &conn)
+    provider::get_by_posts_by_author(author_id, &conn)
         .expect("Cannot get any User Posts")
         .iter()
         .map(|s| PostObject::from(s))
         .collect()
 }
-
+#[derive(Serialize, Deserialize)]
 pub struct User { 
-    id: ID
+    pub id: ID
 }
 
 #[Object(extends)]
 impl User { 
+    /// Reference Resolver for User 
     #[graphql(external)]
     pub async fn get_user_details(&self, id: ID) -> User { 
         User { id }
     }
+    /// Load all Posts under User 
     #[graphql(name = "getPostsByUser")]
     pub async fn get_user_posts(&self, ctx: &Context<'_>, id: ID) -> Vec<PostObject> { 
-        get_posts_user(ctx, user_id)
+        get_posts_user(ctx, id)
     }
 }
-
 #[derive(Default)]
 pub struct PostMutation;
 
@@ -106,14 +106,9 @@ impl PostMutation {
             featured_image: Some(form.featured_image)
         };
         let post = provider::create_post(new_post, &conn)?;
-            // .ok()
-            // .map(|e| PostObject::from(&e))
-            // .expect("Unable to convert Post to PostsObject");
-        
         //  In the mutation, post creation a messgage is sent to the kafka.
         let producer = ctx.data::<FutureProducer>().expect("Cannot get Kafka Producer");
-        let message = serde_json::to_string(&PostObject::from(&post))
-            .expect("Cannot serialize a post");
+        let message = serde_json::to_string(&PostObject::from(&post)).expect("Cannot serialize a post");
         kafka::send_message(producer, message).await;
 
         Ok(PostObject::from(&post))

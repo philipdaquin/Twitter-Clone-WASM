@@ -49,7 +49,6 @@ impl From<&Post> for PostObject {
     }
 }
 
-
 impl User { 
     fn convert(id: i32) -> User { 
         Self { 
