@@ -1,4 +1,4 @@
-# Blogging Platform on Rust/ WASM 
+# Real Time Blogging Platform on Rust/ WASM 
 
 ## TechStack 
 - WebAssembly
