@@ -6,11 +6,16 @@ use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
     EmptyMutation, EmptySubscription, Schema, Context, extensions::ApolloTracing,
 };
+use std::sync::Arc;
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse, GraphQLSubscription};
 use crate::db::{DbPool, DbPooledConnection};
 use super::root_schema::{Mutation, Query, AppSchema, AppSchemaBuilder};
 use diesel::{result::Error as DbError, QueryDsl};
 use diesel_migrations::{MigrationError, embed_migrations};
+use super::kafka;
+use super::modules::schema::CommentSubscription;
+
+
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 
     cfg
@@ -49,13 +54,20 @@ pub async fn index_ws(
 embed_migrations!();
 
 pub fn create_schema(pool: DbPool) -> AppSchema { 
+    let arc = Arc::new(pool);
+    let cloned_pool = Arc::clone(&arc);
+    
+    let kafka_consumer = std::sync::Mutex::new(0);
+
     Schema::build(
         Query::default(), 
-        EmptyMutation, 
-        EmptySubscription
+        Mutation::default(), 
+        CommentSubscription
     )
     // Add a global data that can be accessed in the Schema
-    .data(pool)
+    .data(arc)
+    .data(kafka::create_producer())
+    .data(kafka_consumer)
     .extension(ApolloTracing)
     .finish()
 }
@@ -64,7 +76,7 @@ pub fn run_migrations(pool: &DbPool) {
     embedded_migrations::run(&conn).expect("Failed to run database migrations");
 }
 pub fn get_conn_from_ctx(ctx: &Context<'_>) -> DbPooledConnection { 
-    ctx.data::<DbPool>()
+    ctx.data::<Arc<DbPool>>()
         .expect("Failed to get Db Pool")
         .get()
         .expect("Failed to Connect to Database")

@@ -1,10 +1,18 @@
+use std::sync::Mutex;
+
 use async_graphql::*;
 use async_graphql_actix_web::*;
 use chrono::NaiveDateTime;
-use super::resolver;
+use futures::{Stream, StreamExt};
+use rdkafka::Message;
+use rdkafka::producer::FutureProducer;
+use serde::{Serialize, Deserialize};
+use super::{resolver, model::NewComment};
 use crate::graphql::config::get_conn_from_ctx;
+use crate::graphql::kafka;
 
 
+#[derive(Serialize, Deserialize)]
 pub struct User { 
     pub id: ID
 }
@@ -32,7 +40,7 @@ impl User {
         Ok(user_comments)
     }
 }
-
+#[derive(Serialize, Deserialize)]
 pub struct PostObject { 
     pub id: ID
 }
@@ -55,7 +63,7 @@ impl PostObject {
 #[derive(Default)]
 pub struct CommentQuery;
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Serialize, Deserialize)]
 pub struct CommentType { 
     pub id: ID,
     pub author_id: User,
@@ -99,11 +107,98 @@ impl CommentQuery {
             .ok()
             .map(|f| CommentType::from(&f))
     }
+}
+#[derive(Default)]
+pub struct CommentMutation;
 
+#[derive(InputObject)]
+pub struct CommentInput { 
+    pub author_id: ID, 
+    pub post_id: ID, 
+    pub body: String, 
+    pub media: Option<String>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>
 }
 
+#[Object]
+impl CommentMutation { 
+    #[graphql(name = "createComment")]
+    pub async fn create_comment(&self, ctx: &Context<'_>, new_comment: CommentInput) -> FieldResult<CommentType> {
+        let new_comment = resolver::create_comment(
+        NewComment::from(&new_comment), 
+        &get_conn_from_ctx(ctx))
+            .expect("");
+        let comment = CommentType::from(&new_comment);
+
+        let kafka_producer = ctx
+            .data::<FutureProducer>()
+            .expect("Cannot Access Kafka Producer");
+        let kafka_message = serde_json::to_string(&comment)
+            .expect("Cannot Serialize Comment");
+        kafka::send_message(kafka_producer, kafka_message).await;
+
+        Ok(comment)
+    }
+    #[graphql(name = "updateComment")]
+    pub async fn update_comment(&self, ctx: &Context<'_>, post_id: ID, author_id: ID, new_comment: CommentInput) -> Option<CommentType> {
+        let comment = resolver::update_user_comment(
+            parse_id(post_id), 
+            parse_id(author_id), 
+            NewComment::from(&new_comment), 
+            &get_conn_from_ctx(ctx)
+        ).expect("");
+        Some(CommentType::from(&comment))
+    }
+    #[graphql(name = "deleteComment")]
+    pub async fn delete_comment(
+        &self, 
+        ctx: &Context<'_>, 
+        comment_id: ID,
+        post_id: ID,
+        author_id: ID) -> FieldResult<bool> {
+        
+        resolver::delete_comment(
+            parse_id(comment_id),
+            parse_id(post_id),
+            parse_id(author_id),
+            &get_conn_from_ctx(ctx)
+        )?;
+        Ok(true)
+            
+    }
+}
+
+#[derive(Default)]
+pub struct CommentSubscription;
+
+#[Subscription]
+impl CommentSubscription { 
+    pub async fn latest_comments<'ctx>(&self, ctx: &'ctx Context<'_>) -> impl Stream<Item = CommentType> + 'ctx { 
+        let kafka_consumer_counter = ctx.data::<Mutex<i32>>().expect("Cannot get Kafka Consumer");
+        let consumer_groud_id = kafka::get_kafka_consumer_id(kafka_consumer_counter);
+        let consumer = kafka::create_consumer(consumer_groud_id);
+
+        async_stream::stream! { 
+            let mut stream = consumer.stream();
+            while let Some(val) = stream.next().await { 
+                yield match val { 
+                    Ok(message) => { 
+                        let payload = message.payload().expect("");
+                        let message = String::from_utf8_lossy(payload).to_string();
+
+                        serde_json::from_str(&message)
+                            .expect("Cannot Deserialize Comments")
+                    }
+                    Err(e) => panic!("Error while Kafka Message Processing: {}", e)
+                };
+            }
+        }
+    }
+}
 
 
 fn parse_id(id: ID) -> i32 { 
     id.parse::<i32>().expect("")
 }
+

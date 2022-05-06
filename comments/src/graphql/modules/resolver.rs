@@ -34,7 +34,16 @@ pub fn update_user_comment(post_id: i32, author_id: i32, new_comment: NewComment
         .get_result::<Comment>(conn)
 }
 
-pub fn delete_comment(post_id: i32, conn: &PgConnection) -> QueryResult<bool> { 
-    diesel::delete(comments::table.filter(comments::post_id.eq(post_id))).execute(conn)?;
+pub fn delete_comment(
+    comment_id: i32, 
+    post_id: i32, 
+    author_id: i32,
+    conn: &PgConnection) -> QueryResult<bool> { 
+    diesel::delete(comments::table
+        //  Select Which Post, Which Comment, and Who's Comment?
+        .filter(comments::post_id.eq(post_id))
+        .filter(comments::id.eq(comment_id))
+        .find(author_id)
+    ).execute(conn)?;
     Ok(true)
 }

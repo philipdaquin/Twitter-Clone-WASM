@@ -1,7 +1,10 @@
 use crate::schema::comments;
+use async_graphql::ID;
 use diesel::prelude::*;
 use chrono::NaiveDateTime;
-use super::schema::{CommentQuery, User, PostObject, CommentType};
+use super::schema::{CommentQuery, User, PostObject, CommentType, CommentInput};
+
+
 #[derive(Queryable, Identifiable, Clone, PartialEq, Debug)]
 #[table_name = "comments"]
 pub struct Comment { 
@@ -24,7 +27,7 @@ pub struct NewComment {
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>
 }
-
+/// Comment --> CommentType
 impl From<&Comment> for CommentType { 
     fn from(f: &Comment) -> Self {
         Self { 
@@ -35,6 +38,21 @@ impl From<&Comment> for CommentType {
             media: f.media.clone(),
             created_at: f.created_at.clone(),
             updated_at: f.updated_at.clone() 
+        }
+    }
+}
+
+/// Comment_Graphql ---> NewCommment 
+impl From<&CommentInput> for NewComment { 
+    fn from(f: &CommentInput) -> Self {
+        let parse = |id: ID| -> i32 { id.parse::<i32>().expect("")};
+        Self { 
+            author_id: parse(f.author_id.clone()),
+            post_id: parse(f.post_id.clone()),
+            body: f.body.clone(),
+            media: f.media.clone().unwrap(),
+            created_at: f.created_at.clone(),
+            updated_at: f.updated_at.clone()
         }
     }
 }
