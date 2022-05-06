@@ -10,7 +10,7 @@ actix = "0.13.0"
 actix-web = "4.0.1"
 actix-web-lab = "0.16.1"
 actix-cors = "0.6"
-async-graphql = { version = "3.0.37", features = ["apollo_tracing"] }
+async-graphql = { version = "3.0.37", features = ["apollo_tracing", "chrono"] }
 async-graphql-actix-web = "3.0.38"
 env_logger = "0.9"
 log = "0.4"
