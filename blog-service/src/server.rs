@@ -5,11 +5,12 @@ use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
     EmptyMutation, EmptySubscription, Schema,
 };
+use crate::redis::create_client;
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
 use crate::graphql_module::context::{graphql, graphql_playground, create_schema, run_migrations};
 use crate::db::{DatabaseKind, establish_connection};
 use super::graphql_module::context::configure_service;
-
+use std::env::var;
 
 
 pub async fn new_server(port: u32) -> std::io::Result<()> {
@@ -21,10 +22,13 @@ pub async fn new_server(port: u32) -> std::io::Result<()> {
     //  GraphQl Schema
     let schema = web::Data::new(create_schema(db_pool));
     //  Redis Config 
-    let redis_url = std::var::env("REDIS_URL").expect("Cannot Read Redis");
-    let redis_client 
-
-
+    let redis_url = std::env::var("REDIS_URL").expect("Cannot Read Redis");
+    let redis_client = create_client(redis_url).await.expect("Cannto Create Redis Client, Pub/Sub");
+    let redis_connection_manager = redis_client
+        .get_tokio_connection_manager()
+        .await
+        .expect("Cannot create Redis Connection Manager");
+    
 
     log::info!("starting HTTP server on port 8080");
     log::info!("GraphiQL playground: http://localhost:8080/graphiql");
