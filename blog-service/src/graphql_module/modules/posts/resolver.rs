@@ -27,6 +27,13 @@ pub struct PostObject {
 
 #[Object]
 impl PostQuery { 
+    /// Resolver Reference 
+    #[graphql(entity)]
+    async fn get_user_details(&self, #[graphql(key)] id: ID) -> User { 
+        User { 
+            id
+        }
+    }
     #[graphql(name = "getPost")]
     async fn get_post(&self, ctx: &Context<'_>) -> Vec<PostObject> {
         let conn = get_conn_from_ctx(ctx);
@@ -63,9 +70,9 @@ pub struct User {
 }
 #[Object(extends)]
 impl User { 
-    /// Reference Resolver for User 
+    /// The Key needed for 
     #[graphql(external)]
-    pub async fn get_user_details(&self, id: ID) -> User { 
+    pub async fn id(&self, id: ID) -> User { 
         User { id }
     }
     /// Load all Posts under User 

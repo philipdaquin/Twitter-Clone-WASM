@@ -3,5 +3,6 @@ members = [
     "auth-service", 
     "frontend",
     "blog-service",
-    "common-utils"
+    "common-utils",
+    "comments"
 ]
