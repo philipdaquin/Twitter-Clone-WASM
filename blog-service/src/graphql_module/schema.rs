@@ -1,5 +1,5 @@
 use async_graphql::{Subscription, MergedObject, Schema, SchemaBuilder};
-use super::modules::{
+use super::{
     // comments::resolvers::{CommentQuery, CommentMutation},
     posts::resolver::{PostMutation, PostQuery, Subscription}
 };

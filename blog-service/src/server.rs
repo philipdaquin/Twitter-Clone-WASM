@@ -10,12 +10,21 @@ use crate::graphql_module::context::{graphql, graphql_playground, create_schema,
 use crate::db::{DatabaseKind, establish_connection};
 use super::graphql_module::context::configure_service;
 
+
+
 pub async fn new_server(port: u32) -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
+    //  PostGreSQL Database Pool
     let db_pool = establish_connection(DatabaseKind::Example);
     run_migrations(&db_pool);
+    //  GraphQl Schema
     let schema = web::Data::new(create_schema(db_pool));
+    //  Redis Config 
+    let redis_url = std::var::env("REDIS_URL").expect("Cannot Read Redis");
+    let redis_client 
+
+
 
     log::info!("starting HTTP server on port 8080");
     log::info!("GraphiQL playground: http://localhost:8080/graphiql");

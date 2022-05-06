@@ -20,3 +20,4 @@ pub mod server;
 pub mod db;
 pub mod schema;
 pub mod kafka;
+pub mod redis;

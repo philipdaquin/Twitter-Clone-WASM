@@ -1,4 +1,3 @@
 pub mod context;
-pub mod modules;
 pub mod schema;
-
+pub mod posts;

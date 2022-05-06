@@ -1,6 +1,6 @@
 
 use std::sync::{Mutex, Arc};
-use super::modules::posts::resolver::Subscription;
+use super::posts::resolver::Subscription;
 use actix_cors::Cors;
 use actix_web::{get, middleware::Logger, Error,  route, web::{self}, App, HttpServer, Responder, HttpRequest, HttpResponse, guard};
 use actix_web_lab::respond::Html;

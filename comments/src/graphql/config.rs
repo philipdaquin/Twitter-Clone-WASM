@@ -50,9 +50,7 @@ pub async fn index_ws(
     GraphQLSubscription::new(Schema::clone(&*schema))
         .start(&req, payload)
 }
-
 embed_migrations!();
-
 pub fn create_schema(pool: DbPool) -> AppSchema { 
     let arc = Arc::new(pool);
     let cloned_pool = Arc::clone(&arc);
