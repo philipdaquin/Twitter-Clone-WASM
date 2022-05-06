@@ -3,8 +3,7 @@ use diesel::{Queryable, AsChangeset, Insertable};
 use chrono::NaiveDateTime;
 use serde::{Serialize, Deserialize};
 use crate::schema::posts;
-use super::resolver::{PostObject, User};
-
+use super::resolver::{PostObject, User, PostInput};
 
 #[derive(Queryable, Debug, Serialize, Deserialize, PartialEq, Clone, Identifiable)]
 #[table_name = "posts"]
@@ -23,6 +22,7 @@ pub struct Post {
 #[derive(Insertable, Serialize, AsChangeset, Deserialize, Debug, Clone, PartialEq)]
 #[table_name = "posts"]
 pub struct FormPost { 
+    pub user_id: i32, 
     pub slug: Option<String>, 
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>, 
@@ -48,6 +48,22 @@ impl From<&Post> for PostObject {
         }
     }
 }
+
+impl From<&PostInput> for FormPost { 
+    fn from(f: &PostInput) -> Self {
+        Self { 
+            user_id: f.user_id.parse::<i32>().expect(""), 
+            slug: f.slug.clone(),
+            created_at: f.created_at,
+            updated_at: f.updated_at,
+            title: f.title.clone(),
+            description: f.description.clone(),
+            body: f.body.clone(),
+            featured_image: f.featured_image.clone()
+        }
+    }
+}
+
 
 impl User { 
     fn convert(id: i32) -> User { 

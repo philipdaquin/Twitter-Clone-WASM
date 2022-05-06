@@ -38,7 +38,7 @@ impl PostQuery {
     }
     #[graphql(name = "getPostbyId")]
     async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
-        provider::get_post_by_id(post_id.parse::<i32>().expect(""), &get_conn_from_ctx(ctx))
+        provider::get_post_by_id(parse_id(post_id), &get_conn_from_ctx(ctx))
             .ok()
             .map(|f| PostObject::from(&f))
 
@@ -49,12 +49,9 @@ impl PostQuery {
     }
 }
 pub fn get_posts_user(ctx: &Context<'_>, user_id: ID) -> Vec<PostObject> { 
-    let conn = get_conn_from_ctx(ctx);
-    let author_id = user_id
-        .to_string()
-        .parse::<i32>()
-        .expect("Could not Parse Post_ID");
-    provider::get_by_posts_by_author(author_id, &conn)
+    provider::get_by_posts_by_author(
+        parse_id(user_id), &get_conn_from_ctx(ctx)
+    )
         .expect("Cannot get any User Posts")
         .iter()
         .map(|s| PostObject::from(s))
@@ -64,7 +61,6 @@ pub fn get_posts_user(ctx: &Context<'_>, user_id: ID) -> Vec<PostObject> {
 pub struct User { 
     pub id: ID
 }
-
 #[Object(extends)]
 impl User { 
     /// Reference Resolver for User 
@@ -78,34 +74,27 @@ impl User {
         get_posts_user(ctx, id)
     }
 }
+
+
 #[derive(Default)]
 pub struct PostMutation;
 
 #[derive(InputObject)]
 pub struct PostInput { 
-    pub slug: String,
-    pub title: String, 
-    pub description: String, 
-    pub body: String,
-    pub featured_image: String 
+    pub user_id: ID,
+    pub slug: Option<String>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
+    pub title: Option<String>, 
+    pub description: Option<String>, 
+    pub body: Option<String>,
+    pub featured_image: Option<String> 
 } 
-
 #[Object]
 impl PostMutation { 
     #[graphql(name = "createPost")]
     async fn create_post(&self, ctx: &Context<'_>, form: PostInput) -> Result<PostObject, Error> {
-        let conn = get_conn_from_ctx(ctx);
-        
-        let new_post = FormPost { 
-            slug: Some(form.slug),
-            created_at: Local::now().naive_local(),
-            updated_at: None, 
-            title: Some(form.title),
-            description: Some(form.description),
-            body: Some(form.body),
-            featured_image: Some(form.featured_image)
-        };
-        let post = provider::create_post(new_post, &conn)?;
+        let post = provider::create_post(FormPost::from(&form), &get_conn_from_ctx(ctx))?;
         //  In the mutation, post creation a messgage is sent to the kafka.
         let producer = ctx.data::<FutureProducer>().expect("Cannot get Kafka Producer");
         let message = serde_json::to_string(&PostObject::from(&post)).expect("Cannot serialize a post");
@@ -118,18 +107,19 @@ impl PostMutation {
         &self, 
         ctx: &Context<'_>, 
         form: PostInput,
-        post_id: ID
+        post_id: ID,
+        user_id: ID
     ) -> Result<PostObject, Error> {
-        // let conn = get_conn_from_ctx(ctx);
-        // let post_id = post_id
-        //     .to_string()
-        //     .parse::<i32>()
-        //     .expect("Could not Parse POst Id to int");
-        // let post = provider::update_post( form, &conn)
-        //     .expect("")
-        //     .map(PostObject::from);
-        // Ok(post)
-        todo!()
+        //  Convert the grahql input into readable database input
+        let new_post = provider::update_post(
+            parse_id(post_id), 
+            parse_id(user_id), 
+            FormPost::from(&form), 
+            &get_conn_from_ctx(ctx)
+        ).expect("");
+        //  Convert Post (from the database), into Graphql object
+        Ok(PostObject::from(&new_post))
+
     }
     #[graphql(name = "deletePosts")]
     async fn delete_post(&self, ctx: &Context<'_>, post_author: i32, post_id: i32 ) -> Result<bool, Error> { 
@@ -175,4 +165,8 @@ impl Subscription {
             }
         }
     }
+}
+//  Helper Parser 
+pub fn parse_id(id: ID) -> i32 { 
+    id.parse::<i32>().expect("ParseIntError")
 }

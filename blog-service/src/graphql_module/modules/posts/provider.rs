@@ -23,10 +23,9 @@ pub fn create_post(form: FormPost, conn: &PgConnection) -> QueryResult<Post> {
         .map_err(Into::into)
 }
 pub fn delete_post(post_author: i32, post_id: i32, conn: &PgConnection) -> QueryResult<bool> { 
-    use crate::schema::posts::dsl::*;
 
-    diesel::delete(posts
-        .filter(user_id.eq(post_author))
+    diesel::delete(posts::table
+        .filter(posts:: user_id.eq(post_author))
         .find(post_id)
     )
     .execute(conn)?;
@@ -34,11 +33,11 @@ pub fn delete_post(post_author: i32, post_id: i32, conn: &PgConnection) -> Query
     Ok(true)
 }
 
-pub fn update_post(form: FormPost, conn: &PgConnection) -> QueryResult<Post> { 
-    // let post_id = form.id.ok_or(DbError::NotFound)?;
-    // diesel::update(posts::table.find(post_id))
-    //     .set(form)
-    //     .returning(POSTCOLUMNS)
-    //     .get_result::<Post>(conn)
-    todo!()
+pub fn update_post(post_id: i32, user_id: i32, form: FormPost, conn: &PgConnection) -> QueryResult<Post> { 
+    diesel::update(posts::table
+        .filter(posts::user_id.eq(user_id))
+        .find(post_id)
+    )
+    .set(form)
+    .get_result::<Post>(conn)
 }
