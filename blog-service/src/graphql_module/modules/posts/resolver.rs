@@ -29,11 +29,20 @@ pub struct PostObject {
 impl PostQuery { 
     /// Resolver Reference 
     #[graphql(entity)]
-    async fn get_user_details(&self, #[graphql(key)] id: ID) -> User { 
+    pub async fn get_user_details(&self, #[graphql(key)] id: ID) -> User { 
         User { 
             id
         }
     }
+    #[graphql(entity)]
+    pub async fn get_post_details(
+        &self, 
+        ctx: &Context<'_>, 
+        #[graphql(key)] id: ID
+    ) -> Option<PostObject> { 
+        get_post_detail(ctx, id)
+    }
+
     #[graphql(name = "getPost")]
     async fn get_post(&self, ctx: &Context<'_>) -> Vec<PostObject> {
         let conn = get_conn_from_ctx(ctx);
@@ -44,10 +53,8 @@ impl PostQuery {
             .collect()
     }
     #[graphql(name = "getPostbyId")]
-    async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
-        provider::get_post_by_id(parse_id(post_id), &get_conn_from_ctx(ctx))
-            .ok()
-            .map(|f| PostObject::from(&f))
+    pub async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
+        get_post_detail(ctx, post_id)
 
     }
     #[graphql(name = "getPostsbyAuthor")]
@@ -55,6 +62,13 @@ impl PostQuery {
        get_posts_user(ctx, user_id)
     }
 }
+
+pub fn get_post_detail(ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
+    provider::get_post_by_id(parse_id(post_id), &get_conn_from_ctx(ctx))
+        .ok()
+        .map(|f| PostObject::from(&f))
+}
+
 pub fn get_posts_user(ctx: &Context<'_>, user_id: ID) -> Vec<PostObject> { 
     provider::get_by_posts_by_author(
         parse_id(user_id), &get_conn_from_ctx(ctx)
