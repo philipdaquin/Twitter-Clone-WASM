@@ -1,33 +1,20 @@
 use diesel::prelude::*;
 use super::models::{FormPost, Post};
 use crate::schema::posts;
-use super::models::POSTCOLUMNS;
-use diesel::result::Error as DbError;
-
-
 
 pub fn get_all(conn: &PgConnection) -> QueryResult<Vec<Post>> { 
-    use crate::schema::posts::dsl::*;
-    posts.load(conn)
+    posts::table.load(conn)
 }
-
-pub fn get_id(id: i32, conn: &PgConnection) -> QueryResult<Post> {
-    posts::table
-        .select(POSTCOLUMNS)
-        .find(id)
-        .first::<Post>(conn)
+pub fn get_post_by_id(id: i32, conn: &PgConnection) -> QueryResult<Post> {
+    posts::table.filter(posts::id.eq(id)).first::<Post>(conn)
 }
-pub fn get_by_author(author_id: i32, conn: &PgConnection) -> QueryResult<Vec<Post>> { 
-    use crate::schema::posts::dsl::*;
-    posts.find(author_id).load(conn)
+pub fn get_by_posts_by_author(author_id: i32, conn: &PgConnection) -> QueryResult<Vec<Post>> { 
+    posts::table.filter(posts::user_id.eq(author_id)).load(conn)        
 }
 // pub fn get_for_user(conn: &PgConnection, user_id: i32) -> QueryResult<>
 pub fn create_post(form: FormPost, conn: &PgConnection) -> QueryResult<Post> {
-    //  insert user_id as author_id 
     diesel::insert_into(posts::table)
         .values(form)
-        .returning(POSTCOLUMNS)
-        .on_conflict_do_nothing()
         .get_result::<Post>(conn)?;
     posts::table    
         .order(posts::id.desc())

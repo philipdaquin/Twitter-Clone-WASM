@@ -6,7 +6,9 @@ use crate::graphql_module::{
     context::{get_conn_from_ctx},
     modules::utils::{hash_password, verify_password, is_admin},
 };
-use super::model::{NewUser, User, UserObject, UserInput, SignInInput};
+use crate::graphql_module::modules::utils::Role;
+use chrono::NaiveDateTime;
+use super::model::{NewUser, UserObject};
 use crate::graphql_module::schema::AppSchema;
 use crate::graphql_module::modules;
 use common_utils::token::Role as AuthRole;
@@ -16,6 +18,19 @@ use super::provider;
 
 #[derive(Default)]
 pub struct AuthUser;
+
+#[derive(SimpleObject)]
+pub struct User { 
+    pub id: ID, 
+    pub created_at: NaiveDateTime,
+    pub first_name: String, 
+    pub last_name: String, 
+    pub username: String, 
+    pub location: Option<String>,
+    pub email: String, 
+    pub hash: String,
+    pub role: String
+}
 
 #[Object]
 impl AuthUser  { 
@@ -87,8 +102,30 @@ pub fn find_user_details(ctx: &Context<'_>, id: ID) -> Result<Option<User>, Erro
     Ok(user)
 }
 
+// --------------------------------------
 #[derive(Default)]
 pub struct UserMutate;
+
+///  User Mutation Classes types
+#[derive(InputObject, Deserialize, Serialize, Clone)]
+#[graphql(input_name = "userRegisterInput")]
+pub struct UserInput { 
+    pub username: String,
+    pub password: String,
+    pub first_name: String, 
+    pub last_name: String, 
+    pub location: String,
+    pub email: String, 
+    pub role: Role
+}
+
+#[derive(InputObject, Deserialize, Serialize, Clone)]
+#[graphql(input_name = "signInInput")]
+pub struct SignInInput { 
+    pub username: String, 
+    pub password: String 
+}
+
 
 #[Object]
 impl UserMutate { 

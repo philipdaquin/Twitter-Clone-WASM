@@ -3,13 +3,11 @@ use diesel::{Queryable, AsChangeset, Insertable};
 use chrono::NaiveDateTime;
 use serde::{Serialize, Deserialize};
 use crate::schema::posts;
-use super::super::users::User;
+use super::resolver::{PostObject, User};
 
 
-
-#[derive(Queryable, Associations, Debug, Serialize, Deserialize, PartialEq, Clone, Identifiable)]
+#[derive(Queryable, Debug, Serialize, Deserialize, PartialEq, Clone, Identifiable)]
 #[table_name = "posts"]
-#[belongs_to(User)]
 pub struct Post { 
     pub id: i32,
     pub user_id: i32,
@@ -33,45 +31,29 @@ pub struct FormPost {
     pub body: Option<String>,
     pub featured_image: Option<String>
 }
-#[derive(InputObject)]
-pub struct PostInput { 
-    pub slug: String,
-    pub title: String, 
-    pub description: String, 
-    pub body: String,
-    pub featured_image: String 
-} 
-#[derive(Clone, Serialize, Deserialize)]
-pub struct PostObject { 
-    pub id: ID,
-    pub slug: String, 
-    pub title: String,
-    pub description: String, 
-    pub body: String, 
-    pub featured_image: String
+
+
+impl From<&Post> for PostObject { 
+    fn from(oop: &Post) -> Self {
+        PostObject { 
+            id: oop.id.into(),
+            user_id: User::convert(oop.id),
+            slug: oop.slug.clone(),
+            created_at: oop.created_at.clone(),
+            updated_at: oop.updated_at.clone(),
+            title: oop.title.clone(),
+            description: oop.description.clone(),
+            body: oop.body.clone(),
+            featured_image: oop.featured_image.clone()
+        }
+    }
 }
 
 
-pub const POSTCOLUMNS: PostColumn = (
-    posts::id,
-    posts::user_id,
-    posts::slug,
-    posts::created_at,
-    posts::updated_at,
-    posts::title,
-    posts::description,
-    posts::body,
-    posts::featured_image,
-);
-
-pub type PostColumn = (
-    posts::id,
-    posts::user_id,
-    posts::slug,
-    posts::created_at,
-    posts::updated_at,
-    posts::title,
-    posts::description,
-    posts::body,
-    posts::featured_image,
-);
+impl User { 
+    fn convert(id: i32) -> User { 
+        Self { 
+            id: id.into()
+        }
+    }
+}

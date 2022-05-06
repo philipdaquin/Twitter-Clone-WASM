@@ -4,6 +4,7 @@ use async_graphql::{SimpleObject, InputObject, ID};
 use chrono::{NaiveDateTime, Local};
 use diesel::AsChangeset;
 use serde::{Serialize, Deserialize};
+use super::resolver::User;
 use crate::graphql_module::modules::utils::Role;
 
 //  Database Models
@@ -21,7 +22,6 @@ pub struct UserObject {
     pub hash: String,
     pub role: String
 }
-
 ///  User Query Related Classes
 #[derive(Insertable, Deserialize, SimpleObject,
     Serialize, Debug, AsChangeset, Clone, PartialEq)]
@@ -35,55 +35,23 @@ pub struct NewUser {
     pub hash: String,
     pub role: String
 }
-#[derive(SimpleObject)]
-pub struct User { 
-    pub username: String, 
-    pub first_name: String,
-    pub last_name: String, 
-    pub role: Role
-}
+
 impl From<&UserObject> for User { 
     fn from(oop: &UserObject) -> Self {
         User { 
+            id: oop.id.into(),
+            created_at: oop.created_at.clone(),
+            location: oop.location.clone(),
             username: oop.username.clone(),
             first_name: oop.first_name.clone(),
             last_name: oop.last_name.clone(),
-            role: Role::from_str(oop.role.as_str()).expect("Str to Role Conversion Error")
+            email: oop.email.clone(),
+            hash: oop.hash.clone(),
+            role: Role::from_str(oop.role.as_str())
+                .expect("Str to Role Conversion Error")
+                .to_string()
         }
     }
 }
-///  User Mutation Classes types
-#[derive(InputObject, Deserialize, Serialize, Clone)]
-#[graphql(input_name = "userRegisterInput")]
-pub struct UserInput { 
-    /// Hello
-    pub username: String,
-    /// Hello
-    pub password: String,
-    /// Hello 
-    pub first_name: String, 
-    ///  asdasdasd`
-    pub last_name: String, 
-    pub location: String,
-    pub email: String, 
-    pub role: Role
-}
-
-#[derive(InputObject, Deserialize, Serialize, Clone)]
-#[graphql(input_name = "signInInput")]
-pub struct SignInInput { 
-    pub username: String, 
-    pub password: String 
-}
-
-
-
-
-
-
-
-
-
-
 
 

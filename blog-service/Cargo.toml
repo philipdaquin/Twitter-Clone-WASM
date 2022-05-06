@@ -7,8 +7,8 @@ edition = "2021"
 
 [dependencies]
 actix = "0.13.0"
-actix-web = "4"
-actix-web-lab = "0.15.0"
+actix-web = "4.0.1"
+actix-web-lab = "0.16.1"
 actix-cors = "0.6"
 async-graphql = { version = "3.0.37", features = ["apollo_tracing"] }
 async-graphql-actix-web = "3.0.37"
@@ -27,7 +27,7 @@ diesel_migrations = "1.4.0"
 chrono = { version = "0.4", features = ["serde"] }
 argonautica = "0.2.0"
 lazy_static = "1.4.0"
-uuid = {version = "0.8.2", features = ["serde","v4"]}
+uuid = {version = "1.0.0", features = ["serde","v4"]}
 common-utils = { path ="../common-utils" } 
-rdkafka = { version = "0.27.0", features = ["cmake-build"] }
+rdkafka = { version = "0.28.0", features = ["cmake-build"] }
 futures = "0.3.21"

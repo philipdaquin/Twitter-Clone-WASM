@@ -7,11 +7,23 @@ use super::{provider, models::Post};
 use crate::graphql_module::context::get_conn_from_ctx;
 use super::models::FormPost;
 use chrono::{NaiveDateTime, Local};
-use super::models::{PostInput, PostObject};
 use async_graphql::Error;
 
 #[derive(Default)]
 pub struct PostQuery;
+
+#[derive(SimpleObject)]
+pub struct PostObject { 
+    pub id: ID,
+    pub user_id: User,
+    pub slug: String, 
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime, 
+    pub title: String,
+    pub description: String, 
+    pub body: String, 
+    pub featured_image: String
+}
 
 #[Object]
 impl PostQuery { 
@@ -25,35 +37,58 @@ impl PostQuery {
             .collect()
     }
     #[graphql(name = "getPostbyId")]
-    async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Result<Option<PostObject>, Error> { 
+    async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
         let conn = get_conn_from_ctx(ctx);
-        let id = post_id
-            .to_string()
-            .parse::<i32>()
-            .expect("Could not Parse Post_ID");
-        let post = provider::get_id(id, &conn)  
+        provider::get_post_by_id(post_id.parse::<i32>().expect(""), &get_conn_from_ctx(ctx))
             .ok()
-            .map(|w| PostObject::from(&w));
-        Ok(post)
+            .map(|f| PostObject::from(&f))
 
     }
     #[graphql(name = "getPostsbyAuthor")]
-    async fn get_post_by_authorid(&self, ctx: &Context<'_>, user_id: ID) -> Result<Vec<PostObject>, Error> { 
-        let conn = get_conn_from_ctx(ctx);
-        let author_id = user_id
-            .to_string()
-            .parse::<i32>()
-            .expect("Could not Parse Post_ID");
-        let post_by = provider::get_by_author(author_id, &conn)
-            .expect("Cannot get any User Posts")
-            .iter()
-            .map(|s| PostObject::from(s))
-            .collect();
-        Ok(post_by)
+    async fn get_post_by_authorid(&self, ctx: &Context<'_>, user_id: ID) -> Vec<PostObject> { 
+       get_posts_user(ctx, user_id)
     }
 }
+pub fn get_posts_user(ctx: &Context<'_>, user_id: ID) -> Vec<PostObject> { 
+    let conn = get_conn_from_ctx(ctx);
+    let author_id = user_id
+        .to_string()
+        .parse::<i32>()
+        .expect("Could not Parse Post_ID");
+    provider::get_by_author(author_id, &conn)
+        .expect("Cannot get any User Posts")
+        .iter()
+        .map(|s| PostObject::from(s))
+        .collect()
+}
+
+pub struct User { 
+    id: ID
+}
+
+#[Object(extends)]
+impl User { 
+    #[graphql(external)]
+    pub async fn get_user_details(&self, id: ID) -> User { 
+        User { id }
+    }
+    #[graphql(name = "getPostsByUser")]
+    pub async fn get_user_posts(&self, ctx: &Context<'_>, id: ID) -> Vec<PostObject> { 
+        get_posts_user(ctx, user_id)
+    }
+}
+
 #[derive(Default)]
 pub struct PostMutation;
+
+#[derive(InputObject)]
+pub struct PostInput { 
+    pub slug: String,
+    pub title: String, 
+    pub description: String, 
+    pub body: String,
+    pub featured_image: String 
+} 
 
 #[Object]
 impl PostMutation { 
@@ -110,39 +145,6 @@ impl PostMutation {
     }
 }
 
-#[Object]
-impl PostObject  { 
-    async fn id(&self) -> ID { 
-        self.id.clone()
-    }
-    async fn slug(&self) -> &str {
-        &self.slug
-    }
-    async fn title(&self) -> &str { 
-        &self.title
-    }
-    async fn description(&self) -> &str  {
-        &self.description
-    }
-    async fn body(&self) -> &str { 
-        &self.body
-    }
-    async fn image(&self) -> &str { 
-        &self.featured_image
-    }
-}
-impl From<&Post> for PostObject { 
-    fn from(oop: &Post) -> Self {
-        PostObject { 
-            id: oop.id.into(),
-            slug: oop.slug.clone(),
-            title: oop.title.clone(),
-            description: oop.description.clone(),
-            body: oop.body.clone(),
-            featured_image: oop.featured_image.clone()
-        }
-    }
-}
 
 //  Get the latest Posts
 //  Subscriptions
