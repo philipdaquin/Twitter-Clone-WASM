@@ -35,6 +35,7 @@ pub async fn new_server(port: u32) -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            
             .app_data(schema.clone())
             .configure(configure_service)
             .wrap(Cors::permissive())

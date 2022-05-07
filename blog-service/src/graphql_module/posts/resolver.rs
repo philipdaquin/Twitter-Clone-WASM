@@ -62,13 +62,13 @@ impl PostQuery {
        get_posts_user(ctx, user_id)
     }
 }
-
+/// Gets the Post Information by using the Post Id
 pub fn get_post_detail(ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
     provider::get_post_by_id(parse_id(post_id), &get_conn_from_ctx(ctx))
         .ok()
         .map(|f| PostObject::from(&f))
 }
-
+/// Gets the Post under the author: UserId
 pub fn get_posts_user(ctx: &Context<'_>, user_id: ID) -> Vec<PostObject> { 
     provider::get_by_posts_by_author(
         parse_id(user_id), &get_conn_from_ctx(ctx)

@@ -21,3 +21,4 @@ pub mod db;
 pub mod schema;
 pub mod kafka;
 pub mod redis;
+pub mod error;

@@ -5,6 +5,9 @@ use serde::{Serialize, Deserialize};
 use crate::schema::posts;
 use super::resolver::{PostObject, User, PostInput};
 
+pub const NEW_POST_USER: &str = "newBlogPostofUser";
+
+
 #[derive(Queryable, Debug, Serialize, Deserialize, PartialEq, Clone, Identifiable)]
 #[table_name = "posts"]
 pub struct Post { 
