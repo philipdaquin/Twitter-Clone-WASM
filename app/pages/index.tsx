@@ -4,23 +4,30 @@ import Image from 'next/image'
 import Feed from '../components/Feed'
 import Sidebar from '../components/Sidebar'
 import Widgets from '../components/Widgets'
+import { Tweet } from '../typings'
 import { fetchTweets } from '../utils/fetchTweets'
 
-const Home: NextPage = () => {
-  return (
-    <div className="lg:max-w-6xl mx-auto max-h-screen overflow-hidden">
-      <Head>
-        <title>Real Time Blogging Service on Next Js and Rust</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
 
-      <main className="grid grid-cols-9">
-        <Sidebar />
-        <Feed />
-        <Widgets />
-      </main>
-    </div>
-  )
+interface Props { 
+  tweets: Tweet[]
+}
+
+const Home = ({tweets}: Props) => {
+
+    return (
+        <div className="lg:max-w-6xl mx-auto max-h-screen overflow-hidden">
+          <Head>
+            <title>Real Time Blogging Service on Next Js and Rust</title>
+            <link rel="icon" href="/favicon.ico" />
+          </Head>  
+          <main className="grid grid-cols-9">
+
+            <Sidebar />
+            <Feed tweets={tweets}/>
+            <Widgets />
+          </main>
+        </div>
+    )
 }
 
 export default Home
@@ -30,7 +37,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   
   return { 
     props: { 
-
+      tweets
     }
   }
 }

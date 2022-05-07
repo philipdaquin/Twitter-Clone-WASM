@@ -40,4 +40,4 @@ yarn-error.log*
 
 
 .real-time-blogging-platform/node_modules/
-/.env
+/app/env
