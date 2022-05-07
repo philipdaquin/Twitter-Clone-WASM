@@ -7,11 +7,11 @@ interface Props {
 
 function SidebarRow({Icon, title}: Props) {
   return (
-    <div className='flex max-w-fit items-center space-x-2 px-4 py-3 rounded-full 
-        hover:bg-gray-100 cursor-pointer transition-all duration200 group'>
-
+    <div className='group flex max-w-fit items-center space-x-2 px-4 py-3 
+    rounded-full hover:bg-gray-100 cursor-pointer transition-all duration-200'>
         <Icon className="w-6 h-6"/>
-        <p className='group-hover:text-twitter'>{title}</p>
+        <p className='hidden group-hover:text-twitter md:inline-flex first-letter 
+            text-base font-regular lg:text-xl'>{title}</p>
     </div>
   )
 }

@@ -8,7 +8,7 @@ import Widgets from '../components/Widgets'
 
 const Home: NextPage = () => {
   return (
-    <div className="">
+    <div className="lg:max-w-6xl mx-auto max-h-screen overflow-hidden">
       <Head>
         <title>Real Time Blogging Service on Next Js and Rust</title>
         <link rel="icon" href="/favicon.ico" />
