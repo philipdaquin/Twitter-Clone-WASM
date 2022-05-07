@@ -8,7 +8,7 @@ to publish new information on the User's feed/
 
 ### Frontend Clients
 - NextJs/ReactJs Version of Client [test]
-- WebAssembly/ Yew version of Client [test]
+- WebAssembly/ Yew version of Client [test] 
 ## TechStack 
 - Tailwind
 - Rust Programming Language
@@ -17,6 +17,7 @@ to publish new information on the User's feed/
 - Async-GraphQL
 - Apache Kafka
 - Actix-Web
+- Redis
 - Diesel 
 - Postgresql
 - Docker
