@@ -3,9 +3,9 @@ use async_graphql::ID;
 use diesel::prelude::*;
 use chrono::NaiveDateTime;
 use super::schema::{CommentQuery, User, PostObject, CommentType, CommentInput};
-
-
-#[derive(Queryable, Identifiable, Clone, PartialEq, Debug)]
+use serde::{Deserialize, Serialize};
+#[derive(Queryable, Identifiable, Clone, PartialEq, Debug,
+    Deserialize, Serialize)]
 #[table_name = "comments"]
 pub struct Comment { 
     pub id: i32,
@@ -17,7 +17,8 @@ pub struct Comment {
     pub updated_at: Option<NaiveDateTime>     
 }
 
-#[derive(Insertable, AsChangeset, Clone, PartialEq)]
+#[derive(Insertable, AsChangeset, Clone, PartialEq,
+    Serialize, Deserialize)]
 #[table_name = "comments"]
 pub struct NewComment { 
     pub author_id: i32, 

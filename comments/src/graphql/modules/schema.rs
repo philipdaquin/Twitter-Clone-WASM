@@ -111,7 +111,7 @@ impl CommentQuery {
 #[derive(Default)]
 pub struct CommentMutation;
 
-#[derive(InputObject)]
+#[derive(InputObject, Deserialize, Serialize)]
 pub struct CommentInput { 
     pub author_id: ID, 
     pub post_id: ID, 
