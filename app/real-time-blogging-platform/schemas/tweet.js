@@ -15,12 +15,12 @@ export default {
       type: 'boolean',
     },
     {
-      name: 'Username',
+      name: 'username',
       title: 'Username',
       type: 'string',
     },
     {
-      name: 'profileimg',
+      name: 'profile_img',
       title: 'Profile image',
       type: 'string',
     },
