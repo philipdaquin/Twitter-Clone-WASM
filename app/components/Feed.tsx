@@ -17,15 +17,19 @@ function Feed({tweets}: Props) {
             <RefreshIcon className='h-8 w-8 cursor-pointer text-twitter 
                 mr-5 transition-all duration-500 ease-out hover:rotate-180 active:scale-125'/>
         </div>
-        {/* Tweet box */}
+        {/* Tweet bo</div>x */}
         <div>
             <TweetBox />
         </div>
 
         {/* Feed */}
         <div>
-            <TweetComponent />
-
+            {tweets.map(i => {
+                <TweetComponent 
+                    key={i.id}
+                    tweet={i} 
+                />
+            })}
         </div>
     </div>
   )
