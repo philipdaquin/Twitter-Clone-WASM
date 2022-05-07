@@ -6,9 +6,11 @@ The project is fully built in Rust from End to End and it implements decoupled s
 Users are fed with new posts and new comments once they become available. To improve the system's reliability, Kafka is used 
 to publish new information on the User's feed/
 
+### Frontend Clients
+- NextJs/ReactJs Version of Client [test]
+- WebAssembly/ Yew version of Client [test]
 ## TechStack 
-- Tailwind 
-- WebAssembly/ Yew 
+- Tailwind
 - Rust Programming Language
 - Apollo Federation/ Apollo Server  
 - Graphql Client
