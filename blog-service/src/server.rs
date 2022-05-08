@@ -6,7 +6,7 @@ use async_graphql::{
     EmptyMutation, EmptySubscription, Schema,
 };
 use redis::aio::ConnectionManager;
-use crate::{redis::{start_pubsub, create_client, create_connection, RedisDatabase}, error::ServiceError, };
+use crate::utils::{redis::{start_pubsub, create_client, create_connection, RedisDatabase}, error::ServiceError, };
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
 use crate::graphql_module::context::{graphql, graphql_playground, create_schema, run_migrations};
 use crate::db::{DatabaseKind, establish_connection};

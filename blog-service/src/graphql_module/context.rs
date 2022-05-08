@@ -9,12 +9,12 @@ use async_graphql::{
     EmptyMutation, EmptySubscription, Schema, Context, extensions::ApolloTracing
 };
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse, GraphQLSubscription};
-use crate::{db::{DbPool, DbPooledConnection}, redis::create_connection};
+use crate::{db::{DbPool, DbPooledConnection}, utils::redis::create_connection};
 use super::schema::{Mutation, Query, AppSchema, AppSchemaBuilder};
 use diesel::{result::Error as DbError, QueryDsl};
 use diesel_migrations::{MigrationError, embed_migrations};
 use common_utils::token::get_role;
-use crate::kafka::create_producer;
+use crate::utils::kafka::create_producer;
 use redis::{aio::ConnectionManager as RedisManager, Client as RedisClient, aio::Connection as RedisConnection};
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 

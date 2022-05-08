@@ -4,16 +4,14 @@ use actix_web::{web::Data, HttpResponse};
 use actix_web_lab::__reexports::tokio;
 use redis::aio::ConnectionManager;
 use redis::{Client, RedisError, ToRedisArgs, RedisResult, aio::Connection};
-use super::graphql_module::posts::resolver::PostObject;
+use crate::graphql_module::posts::resolver::PostObject;
 use super::error::ServiceError;
 use crate::graphql_module::posts::models::NEW_POST_USER_CACHE;
 use std::env;
 
-
 lazy_static! {
     static ref BLOG_KEY_PREFIX: String = std::env::var("REDIS_KEY_PREFIX").expect("JWT Secret Key Error");
 }
-
 
 pub enum RedisDatabase { 
     Example, 

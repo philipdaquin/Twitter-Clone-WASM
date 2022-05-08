@@ -1,7 +1,9 @@
 use std::sync::Mutex;
 
 use async_graphql::*;
-use crate::{graphql_module::{schema::{Mutation, Query}, context::get_redis_conn_manager}, kafka, error::ServiceError};
+use crate::{graphql_module::{schema::{Mutation, Query}, 
+    context::get_redis_conn_manager}, 
+    utils::kafka, utils::error::ServiceError};
 use serde::{Deserialize, Serialize};
 use super::{provider, models::Post};
 use crate::graphql_module::context::{get_conn_from_ctx, get_redis_conn_from_ctx};
@@ -9,7 +11,7 @@ use super::models::FormPost;
 use redis::{aio::ConnectionManager, Value,  AsyncCommands, RedisError};
 use chrono::{NaiveDateTime, Local};
 use async_graphql::Error;
-use crate::redis::{create_connection, get_post_cache_key};
+use crate::utils::redis::{create_connection, get_post_cache_key};
 use super::models::NEW_POST_USER_CACHE;
 
 #[derive(Default)]
@@ -111,7 +113,6 @@ impl PostQuery {
        get_posts_user(ctx, user_id)
     }
 }
-
 
 /// Gets the Post Information by using the Post Id
 pub  fn get_post_detail(ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
@@ -227,10 +228,8 @@ impl PostMutation {
 //  Subscriptions
 use rdkafka::{producer::FutureProducer, Message};
 use futures::{Stream, StreamExt};
-use crate::kafka::{create_consumer, create_producer, get_kafka_consumer_id, send_message};
+use crate::utils::kafka::{create_consumer, create_producer, get_kafka_consumer_id, send_message};
 pub struct Subscription;
-
-
 //  The API client can be notified of the event by a subscription that listens to Kafka consumer
 #[Subscription]
 impl Subscription { 
