@@ -13,6 +13,8 @@ use chrono::{NaiveDateTime, Local};
 use async_graphql::Error;
 use crate::utils::redis::{create_connection, get_post_cache_key};
 use super::models::NEW_POST_USER_CACHE;
+use crate::utils::rate_limiter::RateLimiter;
+
 
 #[derive(Default)]
 pub struct PostQuery;
@@ -170,7 +172,6 @@ impl PostMutation {
     #[graphql(name = "createPost")]
     async fn create_post(&self, ctx: &Context<'_>, form: PostInput) -> Result<PostObject, Error> {
         let post = provider::create_post(FormPost::from(&form), &get_conn_from_ctx(ctx))?;
-
         let serialized_post = serde_json::to_string(&PostObject::from(&post))
             .map_err(|_| ServiceError::InternalError)?;
         

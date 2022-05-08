@@ -12,6 +12,7 @@ use crate::graphql_module::context::{graphql, graphql_playground, create_schema,
 use crate::db::{DatabaseKind, establish_connection};
 use super::graphql_module::context::configure_service;
 use std::env::var;
+use crate::utils::rate_limiter::RateLimiter;
 
 
 pub async fn new_server(port: u32) -> std::io::Result<()> {
@@ -33,6 +34,8 @@ pub async fn new_server(port: u32) -> std::io::Result<()> {
         db_pool, 
         redis_client.clone(), 
         redis_connection_manager.clone()));
+    //  In Memory API Limiter 
+    let redis_api_limiter = web::Data::new(RateLimiter::new(redis_connection_manager));
     //  Redis Config 
     // let redis_connection_manager = redis_client
     //     .get_tokio_connection_manager()
@@ -47,6 +50,7 @@ pub async fn new_server(port: u32) -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .app_data(redis_api_limiter.clone())
             .app_data(schema.clone())
             .configure(configure_service)
             .wrap(Cors::permissive())

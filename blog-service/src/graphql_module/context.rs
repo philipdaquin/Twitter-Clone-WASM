@@ -14,8 +14,10 @@ use super::schema::{Mutation, Query, AppSchema, AppSchemaBuilder};
 use diesel::{result::Error as DbError, QueryDsl};
 use diesel_migrations::{MigrationError, embed_migrations};
 use common_utils::token::get_role;
-use crate::utils::kafka::create_producer;
+use crate::utils::{kafka::create_producer, error::ServiceError};
 use redis::{aio::ConnectionManager as RedisManager, Client as RedisClient, aio::Connection as RedisConnection};
+use crate::utils::rate_limiter::RateLimiter;
+
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 
     cfg
@@ -31,13 +33,23 @@ pub fn configure_service(cfg: &mut web::ServiceConfig) {
 }
 /// GraphQL endpoint
 #[route("/graphql", method = "GET", method = "POST")]
-pub async fn graphql(schema: web::Data<AppSchema>, req: GraphQLRequest, http: HttpRequest) -> GraphQLResponse {
-    
+pub async fn graphql(
+    schema: web::Data<AppSchema>, 
+    req: GraphQLRequest, 
+    http: HttpRequest,
+    api_limiter: web::Data<RateLimiter>
+) -> Result<GraphQLResponse, ServiceError> {
+
+    api_limiter
+        .assert_rate_limiter_request(get_ip(http.clone()))
+        .await
+        .map_err(|_| ServiceError::BadClientData);
+
     let (role, mut request) = (get_role(http), req.into_inner());
     if let Some(user) = role { 
         request = request.data(user);
     }
-    schema.execute(request).await.into()
+    Ok(schema.execute(request).await.into())
 }
 /// GraphiQL playground UI
 #[get("/graphiql")]
@@ -46,6 +58,14 @@ pub async fn graphql_playground() -> impl Responder {
         GraphQLPlaygroundConfig::new("/graphql").subscription_endpoint("/graphql"),
     ))
 }
+/// Get user IP address 
+pub fn get_ip(http: HttpRequest) -> String { 
+    http.connection_info()
+    .realip_remote_addr()
+    .expect("Unable to get User Ip")
+    .to_string()
+}
+
 
 pub async fn index_ws(
     schema: web::Data<AppSchema>, 
@@ -61,11 +81,14 @@ embed_migrations!();
 pub fn create_schema(
     pool: DbPool, 
     redis_pool: RedisClient, 
-    redis_connection: RedisManager) -> AppSchema { 
+    redis_connection: RedisManager
+) -> AppSchema { 
+    //  SQL Database
     let arc_pool = Arc::new(pool);
+    //  Kafka Queue
     let kafka_consumer = Mutex::new(0);
+    // Caching Service 
     let arc_redis_connection = Arc::new(redis_connection);
-
 
     Schema::build(Query::default(), Mutation::default(), Subscription
     )
