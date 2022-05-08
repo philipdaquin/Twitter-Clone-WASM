@@ -5,6 +5,7 @@ use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
     EmptyMutation, EmptySubscription, Schema,
 };
+use redis::aio::ConnectionManager;
 use crate::{redis::{start_pubsub, create_client, create_connection, RedisDatabase}, error::ServiceError, };
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
 use crate::graphql_module::context::{graphql, graphql_playground, create_schema, run_migrations};
@@ -23,8 +24,15 @@ pub async fn new_server(port: u32) -> std::io::Result<()> {
     let redis_client = create_client(RedisDatabase::Example)
         .await
         .expect("Unable to create Redis Client Connection");
+    let redis_connection_manager = redis_client
+        .get_tokio_connection_manager()
+        .await
+        .expect("Cannot Create Redis Connection Manager");
     //  GraphQl Schema
-    let schema = web::Data::new(create_schema(db_pool, redis_client.clone()));
+    let schema = web::Data::new(create_schema(
+        db_pool, 
+        redis_client.clone(), 
+        redis_connection_manager.clone()));
     //  Redis Config 
     // let redis_connection_manager = redis_client
     //     .get_tokio_connection_manager()

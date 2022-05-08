@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 
 use async_graphql::*;
-use crate::{graphql_module::schema::{Mutation, Query}, kafka, error::ServiceError};
+use crate::{graphql_module::{schema::{Mutation, Query}, context::get_redis_conn_manager}, kafka, error::ServiceError};
 use serde::{Deserialize, Serialize};
 use super::{provider, models::Post};
 use crate::graphql_module::context::{get_conn_from_ctx, get_redis_conn_from_ctx};
@@ -15,7 +15,7 @@ use super::models::NEW_POST_USER_CACHE;
 #[derive(Default)]
 pub struct PostQuery;
 
-#[derive(SimpleObject, Serialize, Deserialize)]
+#[derive(SimpleObject, Serialize, Deserialize, Clone)]
 pub struct PostObject { 
     pub id: ID,
     pub user_id: User,
@@ -38,15 +38,35 @@ impl PostQuery {
         }
     }
     #[graphql(entity)]
-    pub async fn get_post_details(
-        &self, 
-        ctx: &Context<'_>, 
-        #[graphql(key)] id: ID
-    ) -> Option<PostObject> { 
-        get_post_detail(ctx, id)
+    pub async fn get_post_details(&self, ctx: &Context<'_>, #[graphql(key)] post_id: ID) -> Option<PostObject> { 
+        let cache_key = get_post_cache_key(post_id.to_string().as_str());
+        let mut redis_connection_manager = get_redis_conn_manager(ctx).await;
+        let cached_post: Value = redis_connection_manager
+            .get(cache_key.clone())
+            .await
+            .expect("");
+        //  Check if the data in cache exists, if none, retrieve the data from the database    
+        //  Chain multiple commands and query it to the connection manager    
+        match cached_post { 
+            Value::Nil => { 
+                let post = get_post_detail(ctx, post_id);
+                let _: () = redis::pipe()
+                    .atomic()
+                    .set(&cache_key, post.clone())
+                    .expire(&cache_key, 60)
+                    .query_async(&mut redis_connection_manager)
+                    .await
+                    .expect("Internal Error Occurred while attempting to cache the object");
+                return post
+            },
+            Value::Data(cache) => { 
+                serde_json::from_slice(&cache).expect("")
+            },
+            _ =>  { None }
+        }
     }
 
-    #[graphql(name = "getPost")]
+    #[graphql(name = "getAllPost")]
     async fn get_post(&self, ctx: &Context<'_>) -> Vec<PostObject> {
         let conn = get_conn_from_ctx(ctx);
         provider::get_all(&conn)
@@ -58,7 +78,7 @@ impl PostQuery {
     #[graphql(name = "getPostbyId")]
     pub async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
         let cache_key = get_post_cache_key(post_id.to_string().as_str());
-        let mut redis_client = get_redis_conn_from_ctx(ctx).await;
+        let redis_client = get_redis_conn_from_ctx(ctx).await;
     
         let mut redis_connection = create_connection(redis_client)
             .await
@@ -72,10 +92,11 @@ impl PostQuery {
 
                 let _: () = redis::pipe()
                     .atomic()
-                    .set(&cache_key, post)
+                    .set(&cache_key, post.clone())
                     .expire(&cache_key, 60)
-                    .query_async(&mut conn)
-                    .await?;
+                    .query_async(&mut redis_connection)
+                    .await
+                    .expect("Internal Error Occurred while attempting to cache the object");
 
                 return post
             },
@@ -109,7 +130,7 @@ pub fn get_posts_user(ctx: &Context<'_>, user_id: ID) -> Vec<PostObject> {
         .map(|s| PostObject::from(s))
         .collect()
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct User { 
     pub id: ID
 }
@@ -156,6 +177,7 @@ impl PostMutation {
         let producer = ctx.data::<FutureProducer>().expect("Cannot get Kafka Producer");
         kafka::send_message(producer, serialized_post).await;
         Ok(PostObject::from(&post))
+
     }
     #[graphql(name = "updatePosts")]
     async fn update_post(
@@ -167,11 +189,19 @@ impl PostMutation {
     ) -> Result<PostObject, Error> {
         //  Convert the grahql input into readable database input
         let new_post = provider::update_post(
-            parse_id(post_id), 
+            parse_id(post_id.clone()), 
             parse_id(user_id), 
             FormPost::from(&form), 
             &get_conn_from_ctx(ctx)
         ).expect("");
+        //  Delete the cache under this value 
+        let cache_key = get_post_cache_key(post_id.to_string().as_str());
+        let redis_connection_manager = get_redis_conn_manager(ctx);
+        redis_connection_manager
+            .await
+            .del(cache_key)
+            .await?;
+
         //  Convert Post (from the database), into Graphql object
         Ok(PostObject::from(&new_post))
 
@@ -181,6 +211,14 @@ impl PostMutation {
         let conn = get_conn_from_ctx(ctx);
         provider::delete_post(post_author, post_id, &conn)
             .expect("Couldn't delete Post");
+        
+        //  Deletes the cache under this postid
+        let cache_key = get_post_cache_key(post_id.to_string().as_str());
+        get_redis_conn_manager(ctx)
+            .await
+            .del(cache_key)
+            .await?;
+
         Ok(true)
     }
 }

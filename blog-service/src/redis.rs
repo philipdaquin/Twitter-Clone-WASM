@@ -33,7 +33,7 @@ pub async fn create_connection(redis_client: Client) -> Result<Connection, Servi
     redis_client
         .get_async_connection()
         .await
-        .map_err(|e| ServiceError::InternalError)
+        .map_err(|_| ServiceError::InternalError)
 } 
 /// Post Caching Key 
 pub fn get_post_cache_key(post_id: &str) -> String { 

@@ -15,7 +15,7 @@ use diesel::{result::Error as DbError, QueryDsl};
 use diesel_migrations::{MigrationError, embed_migrations};
 use common_utils::token::get_role;
 use crate::kafka::create_producer;
-use redis::{aio::ConnectionManager, Client as RedisClient, aio::Connection as RedisConnection};
+use redis::{aio::ConnectionManager as RedisManager, Client as RedisClient, aio::Connection as RedisConnection};
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 
     cfg
@@ -58,15 +58,21 @@ pub async fn index_ws(
 
 embed_migrations!();
 
-pub fn create_schema(pool: DbPool, redis_pool: RedisClient) -> AppSchema { 
+pub fn create_schema(
+    pool: DbPool, 
+    redis_pool: RedisClient, 
+    redis_connection: RedisManager) -> AppSchema { 
     let arc_pool = Arc::new(pool);
     let kafka_consumer = Mutex::new(0);
-    
+    let arc_redis_connection = Arc::new(redis_connection);
+
+
     Schema::build(Query::default(), Mutation::default(), Subscription
     )
     .enable_federation()
+    .data(arc_redis_connection)
     // Add a global data that can be accessed in the Schema
-    //  Redis Caching 
+    //  Redis Caching Client  
     .data(redis_pool)
     //  SQL Database Pool
     .data(arc_pool)
@@ -98,5 +104,9 @@ pub async fn get_redis_conn_from_ctx(ctx: &Context<'_>) -> RedisClient {
         .expect("Failed to get Redis Client")
         .clone()
 }
-
-
+/// Access Redis Database Connection
+pub async fn get_redis_conn_manager(ctx: &Context<'_>) -> RedisManager { 
+    ctx.data::<RedisManager>()
+        .expect("Failed to get Redis Connection Manager")
+        .clone()
+}
