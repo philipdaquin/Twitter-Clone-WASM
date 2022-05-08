@@ -1,13 +1,16 @@
 use std::sync::Mutex;
 
 use async_graphql::*;
-use crate::{graphql_module::schema::{Mutation, Query}, kafka};
+use crate::{graphql_module::schema::{Mutation, Query}, kafka, error::ServiceError};
 use serde::{Deserialize, Serialize};
 use super::{provider, models::Post};
-use crate::graphql_module::context::get_conn_from_ctx;
+use crate::graphql_module::context::{get_conn_from_ctx, get_redis_conn_from_ctx};
 use super::models::FormPost;
+use redis::{aio::ConnectionManager, Value,  AsyncCommands, RedisError};
 use chrono::{NaiveDateTime, Local};
 use async_graphql::Error;
+use crate::redis::{create_connection, get_post_cache_key};
+use super::models::NEW_POST_USER_CACHE;
 
 #[derive(Default)]
 pub struct PostQuery;
@@ -54,16 +57,44 @@ impl PostQuery {
     }
     #[graphql(name = "getPostbyId")]
     pub async fn get_post_by_id(&self, ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
-        get_post_detail(ctx, post_id)
+        let cache_key = get_post_cache_key(post_id.to_string().as_str());
+        let mut redis_client = get_redis_conn_from_ctx(ctx).await;
+    
+        let mut redis_connection = create_connection(redis_client)
+            .await
+            .expect("Unable to create Redis DB Connection");
+        let cached_object = redis_connection.get(cache_key.clone()).await.expect("");
+    
+        //  Check If Cache Object is available 
+        match cached_object { 
+            Value::Nil => { 
+                let post = get_post_detail(ctx, post_id);
 
+                let _: () = redis::pipe()
+                    .atomic()
+                    .set(&cache_key, post)
+                    .expire(&cache_key, 60)
+                    .query_async(&mut conn)
+                    .await?;
+
+                return post
+            },
+            Value::Data(cache) => { 
+                serde_json::from_slice(&cache).expect("")
+            },
+            _ => { None }
+        }
     }
     #[graphql(name = "getPostsbyAuthor")]
     async fn get_post_by_authorid(&self, ctx: &Context<'_>, user_id: ID) -> Vec<PostObject> { 
        get_posts_user(ctx, user_id)
     }
 }
+
+
 /// Gets the Post Information by using the Post Id
-pub fn get_post_detail(ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
+pub  fn get_post_detail(ctx: &Context<'_>, post_id: ID) -> Option<PostObject> { 
+
     provider::get_post_by_id(parse_id(post_id), &get_conn_from_ctx(ctx))
         .ok()
         .map(|f| PostObject::from(&f))
@@ -96,7 +127,6 @@ impl User {
     }
 }
 
-
 #[derive(Default)]
 pub struct PostMutation;
 
@@ -113,14 +143,18 @@ pub struct PostInput {
 } 
 #[Object]
 impl PostMutation { 
+    /// Create A New Post 
+    /// The server responds by caching the new Post with Default 
     #[graphql(name = "createPost")]
     async fn create_post(&self, ctx: &Context<'_>, form: PostInput) -> Result<PostObject, Error> {
         let post = provider::create_post(FormPost::from(&form), &get_conn_from_ctx(ctx))?;
+
+        let serialized_post = serde_json::to_string(&PostObject::from(&post))
+            .map_err(|_| ServiceError::InternalError)?;
+        
         //  In the mutation, post creation a messgage is sent to the kafka.
         let producer = ctx.data::<FutureProducer>().expect("Cannot get Kafka Producer");
-        let message = serde_json::to_string(&PostObject::from(&post)).expect("Cannot serialize a post");
-        kafka::send_message(producer, message).await;
-
+        kafka::send_message(producer, serialized_post).await;
         Ok(PostObject::from(&post))
     }
     #[graphql(name = "updatePosts")]
@@ -150,7 +184,6 @@ impl PostMutation {
         Ok(true)
     }
 }
-
 
 //  Get the latest Posts
 //  Subscriptions

@@ -2,15 +2,42 @@ use std::sync::Mutex;
 
 use actix_web::{web::Data, HttpResponse};
 use actix_web_lab::__reexports::tokio;
-use redis::{Client, RedisError, ToRedisArgs, Connection, RedisResult};
+use redis::aio::ConnectionManager;
+use redis::{Client, RedisError, ToRedisArgs, RedisResult, aio::Connection};
 use super::graphql_module::posts::resolver::PostObject;
 use super::error::ServiceError;
-use crate::graphql_module::posts::models::NEW_POST_USER;
+use crate::graphql_module::posts::models::NEW_POST_USER_CACHE;
+use std::env;
 
 
+lazy_static! {
+    static ref BLOG_KEY_PREFIX: String = std::env::var("REDIS_KEY_PREFIX").expect("JWT Secret Key Error");
+}
+
+
+pub enum RedisDatabase { 
+    Example, 
+    ExampleSet
+}
 /// Connect to Redis 
-pub async fn create_client(host_addr: String) -> Result<Client, RedisError> { 
-    Ok(Client::open(host_addr)?)
+pub async fn create_client(cache: RedisDatabase) -> Result<Client, RedisError> {
+    let redis_url = match cache { 
+        RedisDatabase::Example => env::var("REDIS_URL").expect("Cannot Read Redis URI"),
+        _ => env::var("REDIS_URL_TEST").expect("Cannot Redis TEST URL")
+    };
+
+    Ok(Client::open(redis_url)?)
+}
+/// Establish connection to redis 
+pub async fn create_connection(redis_client: Client) -> Result<Connection, ServiceError> { 
+    redis_client
+        .get_async_connection()
+        .await
+        .map_err(|e| ServiceError::InternalError)
+} 
+/// Post Caching Key 
+pub fn get_post_cache_key(post_id: &str) -> String { 
+    format!("{}:{}", BLOG_KEY_PREFIX.as_str(), post_id)
 }
 
 /// Write the Value into a vector of bytes, in this case, we are caching a Post
@@ -31,15 +58,7 @@ impl ToRedisArgs for PostObject {
 //  Rather, they will publish messages irrespectively without having the
 //  knowledge of what subscribers there may be 
 pub async fn start_pubsub(client: &Client) -> Result<(), ServiceError> { 
-    let mut pub_sub = client.get_async_connection().await?.into_pubsub();
-    // pub_sub.subscribe(NEW_POST_USER).await?;
-
-    // tokio::spawn(async move { 
-    //     while let Some(msg) = pub_sub.on_message().next().await { 
-            
-    //     }
-    // })
-
+    // let mut pubsub_conn = create_connection(client).await?.into_pubsub();
 
     todo!()
 }

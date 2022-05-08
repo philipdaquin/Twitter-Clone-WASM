@@ -5,7 +5,7 @@ use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
     EmptyMutation, EmptySubscription, Schema,
 };
-use crate::redis::create_client;
+use crate::{redis::{start_pubsub, create_client, create_connection, RedisDatabase}, error::ServiceError, };
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
 use crate::graphql_module::context::{graphql, graphql_playground, create_schema, run_migrations};
 use crate::db::{DatabaseKind, establish_connection};
@@ -19,23 +19,26 @@ pub async fn new_server(port: u32) -> std::io::Result<()> {
     //  PostGreSQL Database Pool
     let db_pool = establish_connection(DatabaseKind::Example);
     run_migrations(&db_pool);
-    //  GraphQl Schema
-    let schema = web::Data::new(create_schema(db_pool));
-    //  Redis Config 
-    let redis_url = std::env::var("REDIS_URL").expect("Cannot Read Redis");
-    let redis_client = create_client(redis_url).await.expect("Cannto Create Redis Client, Pub/Sub");
-    let redis_connection_manager = redis_client
-        .get_tokio_connection_manager()
+    //  Create a Redis Client `
+    let redis_client = create_client(RedisDatabase::Example)
         .await
-        .expect("Cannot create Redis Connection Manager");
-    
+        .expect("Unable to create Redis Client Connection");
+    //  GraphQl Schema
+    let schema = web::Data::new(create_schema(db_pool, redis_client.clone()));
+    //  Redis Config 
+    // let redis_connection_manager = redis_client
+    //     .get_tokio_connection_manager()
+    //     .await
+    //     .expect("Cannot create Redis Connection Manager");
+    start_pubsub(&redis_client)
+        .await
+        .expect("Unable to start Redis Pub/ Sub");
 
     log::info!("starting HTTP server on port 8080");
     log::info!("GraphiQL playground: http://localhost:8080/graphiql");
 
     HttpServer::new(move || {
         App::new()
-            
             .app_data(schema.clone())
             .configure(configure_service)
             .wrap(Cors::permissive())

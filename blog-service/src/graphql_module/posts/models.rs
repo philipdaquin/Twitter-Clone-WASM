@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 use crate::schema::posts;
 use super::resolver::{PostObject, User, PostInput};
 
-pub const NEW_POST_USER: &str = "newBlogPostofUser";
+pub const NEW_POST_USER_CACHE: &str = "newBlogPostofUser";
 
 
 #[derive(Queryable, Debug, Serialize, Deserialize, PartialEq, Clone, Identifiable)]

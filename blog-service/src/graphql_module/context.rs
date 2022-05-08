@@ -9,12 +9,13 @@ use async_graphql::{
     EmptyMutation, EmptySubscription, Schema, Context, extensions::ApolloTracing
 };
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse, GraphQLSubscription};
-use crate::db::{DbPool, DbPooledConnection};
+use crate::{db::{DbPool, DbPooledConnection}, redis::create_connection};
 use super::schema::{Mutation, Query, AppSchema, AppSchemaBuilder};
 use diesel::{result::Error as DbError, QueryDsl};
 use diesel_migrations::{MigrationError, embed_migrations};
 use common_utils::token::get_role;
 use crate::kafka::create_producer;
+use redis::{aio::ConnectionManager, Client as RedisClient, aio::Connection as RedisConnection};
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 
     cfg
@@ -51,28 +52,30 @@ pub async fn index_ws(
     req: HttpRequest, 
     payload: web::Payload
 ) -> Result<HttpResponse, Error> { 
-    
     GraphQLSubscription::new(Schema::clone(&*schema))
         .start(&req, payload)
 }
 
 embed_migrations!();
 
-pub fn create_schema(pool: DbPool) -> AppSchema { 
+pub fn create_schema(pool: DbPool, redis_pool: RedisClient) -> AppSchema { 
     let arc_pool = Arc::new(pool);
     let kafka_consumer = Mutex::new(0);
     
-    Schema::build(
-        Query::default(), 
-        Mutation::default(), 
-        Subscription
+    Schema::build(Query::default(), Mutation::default(), Subscription
     )
     .enable_federation()
     // Add a global data that can be accessed in the Schema
+    //  Redis Caching 
+    .data(redis_pool)
+    //  SQL Database Pool
     .data(arc_pool)
+    //  Kafka Queue
     .data(create_producer())
     .data(kafka_consumer)
+    //  Apollo Tracing 
     .extension(ApolloTracing)
+    //  Build Schema
     .finish()
 }
 pub fn run_migrations(pool: &DbPool) { 
@@ -82,9 +85,18 @@ pub fn run_migrations(pool: &DbPool) {
     embedded_migrations::run(&conn)
         .expect("Failed to run database migrations");
 }
+/// Access DBPool from Context
 pub fn get_conn_from_ctx(ctx: &Context<'_>) -> DbPooledConnection { 
     ctx.data::<Arc<DbPool>>()
         .expect("Failed to get Db Pool")
         .get()
         .expect("Failed to Connect to Database")
 }
+/// Access Redis from the Context, use 'create_connection' to establish connection asynchronously
+pub async fn get_redis_conn_from_ctx(ctx: &Context<'_>) -> RedisClient { 
+    ctx.data::<RedisClient>()
+        .expect("Failed to get Redis Client")
+        .clone()
+}
+
+
