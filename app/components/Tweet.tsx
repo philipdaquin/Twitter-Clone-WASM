@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {Tweet} from '../typings'
 import {
     ChatAlt2Icon,
@@ -7,13 +7,24 @@ import {
     UploadIcon
 } from '@heroicons/react/outline'
 import TimeAgo from 'react-timeago'
+import { fetchComments } from '../utils/fetchComments'
+import { Comment } from '../typings'
 
 interface Props { 
     tweet: Tweet
 }
 
 function Tweet({tweet} : Props) {
-    
+    const [comments, setComments] = useState<Comment[]>([])
+
+    const refreshComments = async () => { 
+        const comments: Comment[] = await fetchComments(tweet.id)
+        setComments(comments);
+    }
+    useEffect(() => {
+      refreshComments();
+    }, [])
+
     return (
         <>
             <div className='flex flex-col space-x-3 border-y p-5 border-gray-100 '>
@@ -57,6 +68,25 @@ function Tweet({tweet} : Props) {
                         <UploadIcon className='h-5 w-5'/>
                     </div>
                 </div>
+                
+                {/* Comment Box Login */}
+                {/* {comments?.map(comment => { 
+                    <div key={comment.id}>
+                        <img 
+                            src={comment.profile_img} 
+                            className='h-7 w-7 object-cover ' 
+                            alt="" />
+                        <div>
+                            <div>
+                                <p>{comment.username}</p>
+                                <p>@{comment.username
+                                    .replace(/\s+/g, '').toLowerCase()}
+                                </p>
+                            </div>                            
+                        </div>
+                    </div>
+                })} */}
+
             </div>
         </>
     )

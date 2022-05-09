@@ -24,9 +24,9 @@ function Feed({tweets}: Props) {
 
         {/* Feed */}
         <div>
-            {tweets.map(i => {
+            {/* {tweets.map(i => {
                 <TweetComponent key={i.id} tweet={i} />
-            })}
+            })} */}
         </div>
     </div>
   )

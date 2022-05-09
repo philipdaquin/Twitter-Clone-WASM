@@ -7,7 +7,6 @@ import Widgets from '../components/Widgets'
 import { Tweet } from '../typings'
 import { fetchTweets } from '../utils/fetchTweets'
 
-
 interface Props { 
   tweets: Tweet[]
 }
@@ -39,6 +38,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return { 
     props: { 
       tweets
-    },
+    }
   }
 }
