@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
 
 import {
     SearchCircleIcon,
@@ -8,9 +8,17 @@ import {
     PhotographIcon
 } from '@heroicons/react/outline'
 import { useSession } from 'next-auth/react';
+import { Tweet, TweetBody } from '../typings';
+import { fetchTweets } from '../utils/fetchTweets';
+import toast from 'react-hot-toast';
 
 
-function TweetBox() {
+interface Props { 
+    setTweets: Dispatch<SetStateAction<Tweet[]>>
+}
+
+
+function TweetBox({setTweets}: Props) {
     const [input, setInput] = useState<string>('');
     const [image, setImageURL] = useState<string>('');
     const { data: session } = useSession();
@@ -31,6 +39,44 @@ function TweetBox() {
         //  reset the current variable to default
         setImage(false);
     }
+
+    const postTweet = async () => { 
+        //  Create the body of post
+        const tweetBody: TweetBody = {
+            text: input,
+            username: session?.user?.name || "Unable to fidn heruser ",
+            profile_img: session?.user?.name || 'https://links.papareact.com/gll',
+            image: image
+        }
+        //  fetch API including Body and Methpdo
+        const result = await fetch(`/api/addTweet`, { 
+            body: JSON.stringify(tweetBody),
+            method: 'POST'
+        })
+        //  Return result, deserialised it 
+        const json = await result.json();
+        
+        //  Fetch new tweets 
+        const new_tweets = await fetchTweets();
+        setTweets(new_tweets);
+
+        toast('Tweet Sent', { 
+            icon: "👌👌"
+        })
+        return json
+    
+    }
+
+    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => { 
+        e.preventDefault();
+        postTweet();
+        //  Reset Tweet input 
+        setInput('');
+        //  Reset State
+        setImage(false);
+        //  Reset URL box 
+        setImageURL('');
+    }   
 
     return (
         <div className='flex space-x-2 p-5'>
@@ -59,6 +105,7 @@ function TweetBox() {
                             <LocationMarkerIcon className='h-5 w-5'/>  
                         </div>
                         <button 
+                            onClick={handleSubmit}
                             disabled={!input || !session}
                             className="bg-twitter px-5 py-2 font-bold 
                                 rounded-full text-white disabled:opacity-40"
