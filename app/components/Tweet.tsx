@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {Tweet} from '../typings'
+import {CommentBody, Tweet} from '../typings'
 import {
     ChatAlt2Icon,
     HeartIcon,
@@ -9,21 +9,65 @@ import {
 import TimeAgo from 'react-timeago'
 import { fetchComments } from '../utils/fetchComments'
 import { Comment } from '../typings'
+import { useSession } from 'next-auth/react'
+import toast from 'react-hot-toast'
 
 interface Props { 
     tweet: Tweet
 }
 
 function Tweet({tweet} : Props) {
-    const [comments, setComments] = useState<Comment[]>([])
 
+    //  Comments Input 
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [commentBox, setCommentBox] = useState<boolean>(false);
+    const [commentInput, setCommentInput] = useState<string>('');
     const refreshComments = async () => { 
-        const comments: Comment[] = await fetchComments(tweet.id)
+        const comments: Comment[] = await fetchComments(tweet.id);
         setComments(comments);
-    }
+    };
     useEffect(() => {
       refreshComments();
-    }, [])
+    }, []);
+
+    //  User Session
+    const { data: session } = useSession();
+
+    const postComment = async () => { 
+        //  Create the comment 
+        const commentBody: CommentBody = { 
+            comment: commentInput,
+            tweetId: tweet.id,
+            username: session?.user?.name || 'Couldnt find current user',
+            profile_img: session?.user?.image || 'https://links.papareact.com/gll',
+        };
+        //  Post the Comment on the API
+        const result = await fetch(`/api/addComment`, { 
+            body: JSON.stringify(commentBody),
+            method: 'POST'
+        });
+        //  Deserialize
+        const json = await result.json();
+        //  Update the state
+        const new_comment = await fetchComments(tweet.id);
+
+        setComments(new_comment);
+        toast('Comment Sent', { 
+            icon: "👻"
+        })
+        return json
+    };  
+
+    
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => { 
+        e.preventDefault();
+        postComment();
+        //  Reset Comment input
+        setCommentInput('');
+        //  
+        setCommentBox(false);
+    }
+
 
     return (
         <>
@@ -51,7 +95,8 @@ function Tweet({tweet} : Props) {
                 </div>
                 <div className='mt-5 flex justify-between'>
                     
-                    <div className='flex cursor-pointer items-center space-x-3 text-gray-400'>
+                    <div onClick={() => session && setCommentBox(!commentBox) } className='flex cursor-pointer items-center space-x-3 text-gray-400'>
+                        {/* On click, open drop down chat box */}
                         <ChatAlt2Icon className='h-5 w-5'/>
                         <p>{comments.length}</p>
                     </div>
@@ -68,6 +113,27 @@ function Tweet({tweet} : Props) {
                         <UploadIcon className='h-5 w-5'/>
                     </div>
                 </div>
+
+                {/* Comment Box Logic */}
+                {commentBox && ( 
+                    <form onSubmit={handleSubmit} className='mt-3 flex space-x-3'>
+                        <input 
+                            value={commentInput}
+                            onChange={(e) => setCommentInput(e.target.value)}
+                            className="flex-1 rounded-lg bg-gray-100 p-2 outline-none" 
+                            type="text" 
+                            placeholder='Write your Commments Here'/>
+                        <button 
+                            className='text-twitter disabled:text-gray-200' 
+                            disabled={!commentInput} 
+                            type='submit'
+
+                            // onClick={handleSubmit}
+                            >
+                            Post
+                        </button>
+                    </form>    
+                )}
 
                             
           
