@@ -12,6 +12,16 @@ import { Comment } from '../typings'
 import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
 
+
+// Implementing Apollo-Client - local backend services 
+import {
+    ApolloClient,
+    InMemoryCache,
+    ApolloProvider,
+    useQuery,
+    gql
+  } from "@apollo/client";
+
 interface Props { 
     tweet: Tweet
 }
@@ -58,7 +68,7 @@ function Tweet({tweet} : Props) {
         return json
     };  
 
-    
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => { 
         e.preventDefault();
         postComment();
