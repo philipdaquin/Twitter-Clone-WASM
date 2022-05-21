@@ -12,8 +12,8 @@ to publish new information on the User's feed/
 - Rate Limiter and Caching 
 - Monitoring Service
 ### Frontend Clients
-- NextJs/ReactJs Version of Client [test]
-- WebAssembly/ Yew version of Client [test] 
+- NextJs/ReactJs Version of Client [/app]
+- WebAssembly/ Yew version of Client [/frontend] 
 ## TechStack 
 - Tailwind
 - Rust Programming Language
@@ -31,8 +31,6 @@ to publish new information on the User's feed/
 - Alert Manager 
 - cAdvisor 
 - Prometheus 
-
-
 
 
 

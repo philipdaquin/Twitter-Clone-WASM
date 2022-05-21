@@ -7,8 +7,8 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4.0.1"
-async-graphql = { version = "3.0.37", features = ["apollo_tracing"] }
-async-graphql-actix-web = "3.0.37"
+async-graphql = { version = "4.0.0", features = ["apollo_tracing"] }
+async-graphql-actix-web = "4.0.0"
 chrono = "0.4.19"
 diesel = "1.4.8"
 jsonwebtoken = "8.0.1"
@@ -17,3 +17,4 @@ serde = "1.0.136"
 strum = "0.24.0"
 strum_macros = "0.24.0"
 thiserror = "1.0.30"
+derive_more = "0.99.17"

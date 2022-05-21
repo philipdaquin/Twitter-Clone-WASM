@@ -15,3 +15,4 @@ pub mod graphql_module;
 pub mod server;
 pub mod db;
 pub mod schema;
+pub mod redis;

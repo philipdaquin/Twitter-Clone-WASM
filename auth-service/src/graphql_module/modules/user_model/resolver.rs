@@ -2,11 +2,13 @@ use std::str::FromStr;
 use async_graphql::{Error};
 use async_graphql::*;
 use serde::{Deserialize, Serialize};
+use crate::graphql_module::context::get_redis_conn_from_ctx;
 use crate::graphql_module::{
     context::{get_conn_from_ctx},
     modules::utils::{hash_password, verify_password, is_admin},
 };
 use crate::graphql_module::modules::utils::Role;
+use crate::redis::{get_post_cache_key, create_connection};
 use chrono::NaiveDateTime;
 use super::model::{NewUser, UserObject};
 use crate::graphql_module::schema::AppSchema;
@@ -15,11 +17,12 @@ use common_utils::token::Role as AuthRole;
 use crate::graphql_module::modules::utils::RoleGuard;
 // use crate::graphql_module::modules::user_model::provider;
 use super::provider;
+use redis::{aio::ConnectionManager, Value,  AsyncCommands, RedisError};
 
 #[derive(Default)]
 pub struct AuthUser;
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Serialize, Deserialize, Clone, Debug)]
 pub struct User { 
     pub id: ID, 
     pub created_at: NaiveDateTime,
@@ -73,8 +76,35 @@ impl AuthUser  {
         name = "getAllbyId", // guard = "RoleGuard::new(AuthRole::Admin)", // visible = "is_admin"
     )]
     /// This is the test of a description 
-    pub async fn get_users_by_id(&self, ctx: &Context<'_>, id: ID) -> Result<Option<User>, Error> { 
-        find_user_details(ctx, id)
+    pub async fn get_users_by_id(&self, ctx: &Context<'_>, id: ID, ) -> Option<User> { 
+        let cache_key = get_post_cache_key(id.to_string().as_str());
+        let redis_client = get_redis_conn_from_ctx(ctx).await;
+        let mut redis_connection = create_connection(redis_client)
+            .await
+            .expect("Unable to create Redis DB connection");
+        let cached_object = redis_connection.get(cache_key.clone()).await.expect("Redis Error on Client ");
+        
+            //  Check If Cache Object is available 
+        match cached_object { 
+            Value::Nil => { 
+                log::info!("Unable to find cache under this id, accessing Database.. 😂");
+
+                let user = find_user_details(ctx, id).expect("Unable to get User Details");
+                let _: () = redis::pipe()
+                    .atomic()
+                    .set(&cache_key, user.clone())
+                    .expire(&cache_key, 60)
+                    .query_async(&mut redis_connection)
+                    .await
+                    .expect("Internal Error Occurred while attempting to cache the object");
+                return user
+            },
+            Value::Data(cache) => { 
+                log::info!("Cache Found Under this Id! 👌");
+                serde_json::from_slice(&cache).expect("Unable to Deserialize Struct")
+            },
+            _ => { None }
+        }
     }
     #[graphql(name = "getAllbyusername", guard = "RoleGuard::new(AuthRole::Admin)", visible = "is_admin")]
     pub async fn get_users_by_username(
@@ -105,7 +135,6 @@ pub fn find_user_details(ctx: &Context<'_>, id: ID) -> Result<Option<User>, Erro
 // --------------------------------------
 #[derive(Default)]
 pub struct UserMutate;
-
 ///  User Mutation Classes types
 #[derive(InputObject, Deserialize, Serialize, Clone)]
 #[graphql(input_name = "userRegisterInput")]

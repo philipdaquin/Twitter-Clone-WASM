@@ -15,6 +15,9 @@ use diesel_migrations::{MigrationError, embed_migrations};
 use common_utils::token::{get_role};
 use std::env::var;
 use super::modules::user_model::provider;
+use redis::{aio::ConnectionManager as RedisManager, 
+    Client as RedisClient, aio::Connection as RedisConnection};
+
 
 pub fn configure_service(cfg: &mut web::ServiceConfig) { 
     cfg
@@ -86,4 +89,17 @@ pub fn get_conn_from_ctx(ctx: &Context<'_>) -> DbPooledConnection {
         .expect("Failed to get Db Pool")
         .get()
         .expect("Failed to Connect to Database")
+}
+
+/// Access Redis from the Context, use 'create_connection' to establish connection asynchronously
+pub async fn get_redis_conn_from_ctx(ctx: &Context<'_>) -> RedisClient { 
+    ctx.data::<RedisClient>()
+        .expect("Failed to get Redis Client")
+        .clone()
+}
+/// Access Redis Database Connection
+pub async fn get_redis_conn_manager(ctx: &Context<'_>) -> RedisManager { 
+    ctx.data::<RedisManager>()
+        .expect("Failed to get Redis Connection Manager")
+        .clone()
 }

@@ -30,3 +30,5 @@ common-utils = { path ="../common-utils" }
 jsonwebtoken = "8.0.1"
 strum = "0.24.0"
 strum_macros = "0.24.0"
+redis = { version = "0.21.5", features = ["tokio-comp", "connection-manager"] }
+
