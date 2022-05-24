@@ -1,0 +1,25 @@
+[package]
+name = "blog_ingestion_service"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix = "0.13.0"
+actix-web = "4.0.1"
+actix-web-lab = "0.16.1"
+actix-cors = "0.6"
+async-graphql = { version = "4.0.0", features = ["apollo_tracing"] }
+async-graphql-actix-web = "4.0.0"
+env_logger = "0.9"
+log = "0.4"
+slab = "0.4.2"
+dotenv = "0.15.0"
+failure = "0.1.8"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
+chrono = "0.4.19"
+scylla="0.4.5"
+lazy_static="1.4.0"

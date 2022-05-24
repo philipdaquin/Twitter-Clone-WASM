@@ -4,5 +4,6 @@ members = [
     "frontend",
     "blog-service",
     "common-utils",
-    "comments"
+    "comments",
+    "blog_ingestion_service"
 ]
