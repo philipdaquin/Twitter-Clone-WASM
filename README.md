@@ -27,7 +27,7 @@ to publish new information on the User's feed/
 - Postgresql
 - Docker
 
-### Ingestion Service 
+### Ingestion Service [WIP]
 - Scylla/ Cassandra [WIP] && Actix-Web
 
 ### Monitoring Tools
