@@ -5,5 +5,5 @@ members = [
     "blog-service",
     "common-utils",
     "comments",
-    "blog_ingestion_service"
+    # "blog_ingestion_service"
 ]
