@@ -35,11 +35,11 @@ const Home = ({tweets}: Props) => {
 export default Home
 
 export const getServerSideProps: GetServerSideProps = async (context) => { 
-  const tweets = await fetchTweets(); 
+  const tweets: Tweet[] = await fetchTweets(); 
   
   return { 
     props: { 
-      tweets
+      tweets: tweets
     }
   }
 }

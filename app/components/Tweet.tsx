@@ -21,6 +21,7 @@ import {
     useQuery,
     gql
   } from "@apollo/client";
+import TwitterTimelineEmbed from 'react-twitter-embed/dist/components/TwitterTimelineEmbed'
 
 interface Props { 
     tweet: Tweet
