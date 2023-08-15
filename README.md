@@ -6,6 +6,9 @@ The project is fully built in Rust from End to End and it implements decoupled s
 Users are fed with new posts and new comments once they become available. To improve the system's reliability, Kafka is used 
 to publish new information on the User's feed/
 
+### Architecture
+![image 23](https://github.com/philipdaquin/Twitter-Clone-WASM/assets/85416532/8839b2cb-2c9b-4f48-a373-79f213395549)
+
 ### Features
 - Account Creation and User Authentication 
 - Live Blog and Comment Service
